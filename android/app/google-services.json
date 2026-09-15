@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "896252077388",
+    "firebase_url": "https://ottapp-e8b34-default-rtdb.firebaseio.com",
+    "project_id": "ottapp-e8b34",
+    "storage_bucket": "ottapp-e8b34.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896252077388:android:63bc23a651a96ca6c59be9",
+        "android_client_info": {
+          "package_name": "com.example.ottapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNQZXIb2qmvG9auVZ5FtGCVf3mZSaQdaM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896252077388:android:63500cbc8e17a09bc59be9",
+        "android_client_info": {
+          "package_name": "com.ottapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNQZXIb2qmvG9auVZ5FtGCVf3mZSaQdaM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896252077388:android:fea64d114644b9b8c59be9",
+        "android_client_info": {
+          "package_name": "com.ottapp1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNQZXIb2qmvG9auVZ5FtGCVf3mZSaQdaM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
