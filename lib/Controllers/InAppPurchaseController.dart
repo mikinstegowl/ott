@@ -32,6 +32,26 @@ class InAppPurchaseController extends BaseController {
   final RxList<Map<String, dynamic>> serverPlans = <Map<String, dynamic>>[].obs;
   Set<String> _serverProductIds = <String>{};
 
+  /// Subscription product ids, as the server defines them.
+  final RxSet<String> planProductIds = <String>{}.obs;
+
+  /// Pay-per-view product ids (rent / buy tickets).
+  final RxSet<String> ppvProductIds = <String>{}.obs;
+
+  /// Only the subscription plans — what the "upgrade" sheet must show.
+  /// Showing every product here listed rentals and event tickets alongside
+  /// the monthly plans, which is not an offer anyone can act on.
+  List<ProductDetails> get subscriptionProducts => products
+      .where((p) => planProductIds.isEmpty || planProductIds.contains(p.id))
+      .toList();
+
+  /// Only the tickets for one title, in the order the server listed them.
+  List<ProductDetails> ppvProductsFor(Iterable<String> ids) {
+    final wanted = ids.toSet();
+
+    return products.where((p) => wanted.contains(p.id)).toList();
+  }
+
   /// Ask the backend which store products to offer. Falls back to the ids
   /// bundled in the app if the call fails, so the paywall still works offline.
   Future<Set<String>> _loadProductIdsFromServer() async {
@@ -49,15 +69,23 @@ class InAppPurchaseController extends BaseController {
 
       final plans = (data['plans'] as List?) ?? const [];
       serverPlans.assignAll(plans.map((e) => Map<String, dynamic>.from(e as Map)));
+      planProductIds.clear();
       for (final p in serverPlans) {
         final id = p['product_id'];
-        if (id is String && id.isNotEmpty) ids.add(id);
+        if (id is String && id.isNotEmpty) {
+          ids.add(id);
+          planProductIds.add(id);
+        }
       }
 
+      ppvProductIds.clear();
       for (final t in ((data['ppv'] as List?) ?? const [])) {
         for (final key in ['rent_product_id', 'buy_product_id']) {
           final id = (t as Map)[key];
-          if (id is String && id.isNotEmpty) ids.add(id);
+          if (id is String && id.isNotEmpty) {
+            ids.add(id);
+            ppvProductIds.add(id);
+          }
         }
       }
 

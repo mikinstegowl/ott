@@ -56,6 +56,9 @@ class InfoScreen extends GetView<InfoController> {
           onShare: controller.shareContent,
           isLoadingWatchlist: controller.isTogglingWatchlist.value,
           isPlayLoading: controller.isPlayingContent.value,
+          offers: controller.ppvOffers,
+          onOffer: controller.offerAction,
+          ownershipLabel: controller.ownershipLabel,
           extraSection: Column(
             children: [
               _buildEpisodesSection(),

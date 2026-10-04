@@ -25,6 +25,17 @@ class ContentDetailView extends StatelessWidget {
   final bool isLoadingWatchlist;
   final bool isPlayLoading;
 
+  /// Rent / buy buttons for a pay-per-view title. Empty when the title is
+  /// free, subscription-only, or already owned — the server decides, and the
+  /// app draws whatever it is handed.
+  final List<Offer> offers;
+
+  /// Called with the chosen offer ('rent' or 'buy').
+  final void Function(Offer offer)? onOffer;
+
+  /// "Rented · 36 h left" when this viewer already holds the title.
+  final String? ownershipLabel;
+
   const ContentDetailView({
     super.key,
     this.data,
@@ -40,6 +51,9 @@ class ContentDetailView extends StatelessWidget {
     this.extraSection,
     this.isLoadingWatchlist = false,
     this.isPlayLoading = false,
+    this.offers = const [],
+    this.onOffer,
+    this.ownershipLabel,
   });
 
   @override
@@ -95,6 +109,59 @@ class ContentDetailView extends StatelessWidget {
                   isLoading: isLoadingWatchlist,
                   isPlayLoading: isPlayLoading,
                 ),
+                if (ownershipLabel != null)
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.h),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, size: 16.sp, color: const Color(0xFF7EE2A8)),
+                        SizedBox(width: 6.w),
+                        AppTextWidget(
+                          text: ownershipLabel!,
+                          color: const Color(0xFF7EE2A8),
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                // Rent / buy. A pay-per-view title has no subscribe route, so
+                // without these the viewer has no way to watch at all.
+                if (offers.isNotEmpty)
+                  Padding(
+                    padding: EdgeInsets.only(top: 12.h),
+                    child: Wrap(
+                      spacing: 10.w,
+                      runSpacing: 10.h,
+                      children: offers.map((offer) {
+                        return OutlinedButton.icon(
+                          onPressed: onOffer == null ? null : () => onOffer!(offer),
+                          icon: Icon(
+                            offer.type == 'rent' ? Icons.schedule : Icons.shopping_bag_outlined,
+                            size: 18.sp,
+                            color: AppColors.white,
+                          ),
+                          label: AppTextWidget(
+                            text: offer.type == 'rent' && offer.watchHours != null
+                                ? '${offer.label} · ${offer.watchHours}h'
+                                : offer.label,
+                            color: AppColors.white,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: AppColors.white.withValues(alpha: 0.4)),
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
                 if (extraSection != null) extraSection!,
               ],
             ),

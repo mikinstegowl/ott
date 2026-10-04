@@ -9,16 +9,38 @@ import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class InAppPurchaseBottomSheet extends StatelessWidget {
-  const InAppPurchaseBottomSheet({super.key});
+  const InAppPurchaseBottomSheet({super.key, this.offerProductIds, this.title});
 
-  static void show(BuildContext context) {
+  /// Pay-per-view product ids for ONE title. Null means this is the
+  /// subscription sheet, which must only ever list subscription plans —
+  /// listing rentals and event tickets there offers something the viewer
+  /// cannot act on from this screen.
+  final List<String>? offerProductIds;
+
+  /// Heading override, e.g. the film's name on a rent/buy sheet.
+  final String? title;
+
+  static void show(
+    BuildContext context, {
+    List<String>? offerProductIds,
+    String? title,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const InAppPurchaseBottomSheet(),
+      builder: (_) => InAppPurchaseBottomSheet(
+        offerProductIds: offerProductIds,
+        title: title,
+      ),
     );
   }
+
+  /// What this sheet is allowed to show.
+  List<ProductDetails> _visibleProducts(InAppPurchaseController c) =>
+      offerProductIds == null
+          ? c.subscriptionProducts
+          : c.ppvProductsFor(offerProductIds!);
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +110,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                     child: CircularProgressIndicator(color: AppColors.appColors),
                   ),
                 )
-              else if (controller.products.isEmpty)
+              else if (_visibleProducts(controller).isEmpty)
                 Container(
                   padding: EdgeInsets.all(16.r),
                   margin: EdgeInsets.symmetric(vertical: 16.h),
@@ -126,7 +148,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                   ),
                 )
               else
-                ...controller.products.map((product) {
+                ..._visibleProducts(controller).map((product) {
                   final isSelected = controller.selectedProductId.value == product.id;
                   return _buildProductCard(product, isSelected, () {
                     controller.selectedProductId.value = product.id;
@@ -145,10 +167,11 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
-                onPressed: controller.isPurchasing.value || controller.products.isEmpty
+                onPressed: controller.isPurchasing.value ||
+                        _visibleProducts(controller).isEmpty
                     ? null
                     : () {
-                        final selected = controller.products.firstWhereOrNull(
+                        final selected = _visibleProducts(controller).firstWhereOrNull(
                           (p) => p.id == controller.selectedProductId.value,
                         );
                         if (selected != null) {

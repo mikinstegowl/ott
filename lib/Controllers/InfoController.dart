@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:ottapp/ChopperClientService/HomeChopperService.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
+import 'package:ottapp/Controllers/InAppPurchaseController.dart';
 import 'package:ottapp/Models/InfoModel.dart';
 import 'package:ottapp/Models/MagicLinkModel.dart';
 import 'package:ottapp/Models/RecommendedModel.dart';
@@ -48,12 +49,83 @@ class InfoController extends BaseController {
     }
   }
 
+  /// The server's decision for this viewer: what they may do and what they
+  /// can buy. Falls back to the old is_free logic when an older API response
+  /// carries no access block.
+  Access? get access => contentData.value?.data?.access;
+
+  /// Rent / buy buttons to draw. Empty once the viewer can already play.
+  List<Offer> get ppvOffers =>
+      (access?.canPlay ?? false) ? const [] : (access?.ppvOffers ?? const []);
+
+  /// "Purchased" / "Rented · 36 h left", or null when they own nothing.
+  String? get ownershipLabel {
+    final p = access?.purchase;
+    if (p == null || access?.canPlay != true || access?.mode != 'purchase') {
+      return null;
+    }
+    if (p.type == 'buy') return 'Purchased';
+    if (p.startsAt == null) return 'Rented — not started yet';
+    final hours = ((p.secondsRemaining ?? 0) / 3600).round();
+    return 'Rented · \${hours}h left';
+  }
+
   void _updateWatchNowText() {
+    final a = access;
+
+    if (a != null) {
+      if (a.canPlay == true) {
+        watchNowText.value = "Watch Now";
+      } else if (a.hasSubscribe) {
+        watchNowText.value = "Subscribe To Watch";
+      } else {
+        // Pay-per-view only — subscribing would not unlock it, so the primary
+        // button must not promise that.
+        watchNowText.value = "Rent or Buy To Watch";
+      }
+      return;
+    }
+
     if (contentData.value?.data?.isFree == false &&
         !BaseController.isSubscribed.value) {
       watchNowText.value = "Subscribe To Watch";
     } else {
       watchNowText.value = "Watch Now";
+    }
+  }
+
+  /// A rent or buy button was tapped: open the paywall with ONLY that title's
+  /// tickets, and remember which title the purchase is for so the server can
+  /// attach it to the right content.
+  void offerAction(Offer offer) {
+    if (isGuest) {
+      showLoginDialog();
+      return;
+    }
+
+    final iap = Get.put(InAppPurchaseController());
+    iap.pendingContentUuid = contentUuid;
+    iap.pendingLiveUuid = null;
+
+    final ids = ppvOffers
+        .map((o) => Platform.isIOS ? o.appleProductId : o.googleProductId)
+        .whereType<String>()
+        .toList();
+
+    if (ids.isEmpty) {
+      Utility.showSnackBar(
+        'This title is not available for purchase in the app yet.',
+        isError: true,
+      );
+      return;
+    }
+
+    if (Get.context != null && Get.context!.mounted) {
+      InAppPurchaseBottomSheet.show(
+        Get.context!,
+        offerProductIds: ids,
+        title: contentData.value?.data?.title,
+      );
     }
   }
 
