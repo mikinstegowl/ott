@@ -36,6 +36,16 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
     );
   }
 
+  /// The heading, which has to match what is being sold. "Upgrade to VIP —
+  /// unlimited episodes" is wrong above a 48-hour rental of one film.
+  String get _heading => offerProductIds == null
+      ? 'Choose your plan'
+      : (title == null || title!.isEmpty ? 'Rent or buy' : 'Rent or buy $title');
+
+  String get _subheading => offerProductIds == null
+      ? 'Watch the full catalogue on any device'
+      : 'One payment — no subscription needed';
+
   /// What this sheet is allowed to show.
   List<ProductDetails> _visibleProducts(InAppPurchaseController c) =>
       offerProductIds == null
@@ -80,14 +90,14 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AppTextWidget(
-                          text: 'Upgrade to VIP',
+                          text: _heading,
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.white,
                         ),
                         SizedBox(height: 4.h),
                         AppTextWidget(
-                          text: 'Unlock unlimited episodes & ad-free streaming',
+                          text: _subheading,
                           fontSize: 13.sp,
                           color: AppColors.lightWhite70,
                         ),
