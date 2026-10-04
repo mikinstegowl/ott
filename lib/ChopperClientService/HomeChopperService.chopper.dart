@@ -19,6 +19,37 @@ final class _$HomeChopperService extends HomeChopperService {
   final Type definitionType = HomeChopperService;
 
   @override
+  Future<Response<dynamic>> appProducts(String platform) {
+    final Uri $url = Uri.parse('app/products');
+    final Map<String, dynamic> $params = <String, dynamic>{
+      'platform': platform,
+    };
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> verifyAppPurchase(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('app/purchase/verify');
+    final $body = body;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> restoreAppPurchases(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('app/purchase/restore');
+    final $body = body;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<WatchHistoryResponse>> syncWatchHistory(
     Map<String, dynamic> body,
   ) {

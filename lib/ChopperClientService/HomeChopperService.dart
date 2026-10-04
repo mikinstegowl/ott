@@ -29,6 +29,30 @@ abstract class HomeChopperService extends ChopperService {
     return _$HomeChopperService(client);
   }
 
+  // ── In-app purchases ──
+  // The store bills the viewer; the server decides what that unlocks. The
+  // app never grants access on its own, so a tampered client gets nothing.
+
+  /// Which store products to offer, and their ids. Served by the backend so a
+  /// price or product change needs no app release.
+  @Get(path: 'app/products')
+  Future<Response<dynamic>> appProducts(
+    @Query('platform') String platform,
+  );
+
+  /// Hand the store's receipt to the server, which verifies it with Apple or
+  /// Google and grants the subscription or ticket.
+  @Post(path: 'app/purchase/verify')
+  Future<Response<dynamic>> verifyAppPurchase(
+    @Body() Map<String, dynamic> body,
+  );
+
+  /// Replay every receipt the device holds ("Restore purchases").
+  @Post(path: 'app/purchase/restore')
+  Future<Response<dynamic>> restoreAppPurchases(
+    @Body() Map<String, dynamic> body,
+  );
+
   @Post(path: 'watch-history/sync')
   Future<Response<WatchHistoryResponse>> syncWatchHistory(
     @Body() Map<String, dynamic> body,
