@@ -37,6 +37,7 @@ class InAppPurchaseConstants {
   };
 
   // Legal Links (MANDATORY for Apple App Store Subscriptions approval)
-  static const String termsOfServiceUrl = 'https://yourwebsite.com/terms';
-  static const String privacyPolicyUrl = 'https://yourwebsite.com/privacy';
+  static const String termsOfServiceUrl = 'https://trebolplus.com/terms';
+  static const String appleStandardEulaUrl = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
+  static const String privacyPolicyUrl = 'https://trebolplus.com/privacy';
 }

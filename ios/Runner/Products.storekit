@@ -1,0 +1,117 @@
+{
+  "identifier" : "E2B7A8B5",
+  "nonRenewingSubscriptions" : [ ],
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "1001",
+      "localizations" : [
+        {
+          "description" : "Unlock episodes and shorts instantly",
+          "displayName" : "100 Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ott_coins_100",
+      "referenceName" : "100 Coins Pack",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "1002",
+      "localizations" : [
+        {
+          "description" : "Unlock episodes and shorts instantly",
+          "displayName" : "500 Coins",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ott_coins_500",
+      "referenceName" : "500 Coins Pack",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "99.99",
+      "familyShareable" : false,
+      "internalID" : "1003",
+      "localizations" : [
+        {
+          "description" : "Pay once, unlimited streaming forever",
+          "displayName" : "Lifetime VIP Access",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ott_lifetime_vip",
+      "referenceName" : "Lifetime VIP",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA"
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "2001",
+      "localizations" : [
+        {
+          "description" : "VIP Streaming Membership",
+          "displayName" : "Trebol VIP",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "Trebol VIP",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [ ],
+          "codeOffers" : [ ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "3001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Unlimited streaming for 1 month",
+              "displayName" : "Monthly VIP Pass",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "ott_subscription_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly VIP Pass",
+          "subscriptionGroupID" : "2001",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [ ],
+          "codeOffers" : [ ],
+          "displayPrice" : "39.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "3002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Unlimited streaming for 12 months (Save 40%)",
+              "displayName" : "Yearly VIP Pass",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "ott_subscription_yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Yearly VIP Pass",
+          "subscriptionGroupID" : "2001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
