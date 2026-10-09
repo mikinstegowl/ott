@@ -47,6 +47,15 @@ abstract class HomeChopperService extends ChopperService {
     @Body() Map<String, dynamic> body,
   );
 
+  /// Ad playback beacons — impression, quartiles, complete, click, skip.
+  /// Batched and fire-and-forget: a lost beacon must never interrupt playback.
+  /// The report groups by device, so the platform travels in a header.
+  @Post(path: 'ads/events')
+  Future<Response<dynamic>> sendAdEvents(
+    @Body() Map<String, dynamic> body,
+    @Header('X-Device-Type') String deviceType,
+  );
+
   /// Replay every receipt the device holds ("Restore purchases").
   @Post(path: 'app/purchase/restore')
   Future<Response<dynamic>> restoreAppPurchases(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ottapp/Const/AppColors.dart';
 import 'package:ottapp/Controllers/PlayerController.dart';
+import 'package:ottapp/Widgets/Player/AdOverlay.dart';
 import 'package:chewie/chewie.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart' as yt;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -52,15 +53,23 @@ class AppVideoPlayerView extends StatelessWidget {
                           CircularProgressIndicator(color: AppColors.appColors))
                   : const SizedBox.shrink()),
 
-              // 3. Controls Overlay
+              // 3. Controls Overlay — hidden while an ad runs, so the viewer
+              // cannot scrub or skip past the break with the normal controls.
               Obx(() => AnimatedOpacity(
                     duration: const Duration(milliseconds: 300),
-                    opacity: controller.showControls.value ? 1.0 : 0.0,
+                    opacity: (controller.showControls.value &&
+                            !controller.ads.inAd.value)
+                        ? 1.0
+                        : 0.0,
                     child: IgnorePointer(
-                      ignoring: !controller.showControls.value,
+                      ignoring: !controller.showControls.value ||
+                          controller.ads.inAd.value,
                       child: _buildControlsOverlay(context),
                     ),
                   )),
+
+              // 4. Ad break — covers everything above while a creative plays.
+              AdOverlay(controller: controller.ads),
             ],
           ),
         );
