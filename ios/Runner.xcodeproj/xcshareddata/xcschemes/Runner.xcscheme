@@ -74,8 +74,11 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../../../Runner/TrebolPlus.storekit">
+         identifier = "../Runner/TrebolPlus.storekit">
       </StoreKitConfigurationFileReference>
+      <MetalAPIValidationSettings
+         isEnabled = "No">
+      </MetalAPIValidationSettings>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Profile"

@@ -10,6 +10,7 @@ import 'package:ottapp/Constants/CustomSnackBar.dart';
 import 'package:ottapp/Constants/InAppPurchaseConstants.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
 import 'package:ottapp/Services/InAppPurchaseService.dart';
+import 'package:ottapp/Widgets/InAppPurchase/InAppPurchaseBottomSheet.dart';
 
 class InAppPurchaseController extends BaseController {
   final InAppPurchaseService _iapService = InAppPurchaseService();
@@ -17,6 +18,12 @@ class InAppPurchaseController extends BaseController {
   final RxBool isStoreAvailable = false.obs;
   final RxBool isLoadingProducts = false.obs;
   final RxBool isPurchasing = false.obs;
+
+  /// Bumped every time the server grants something new. Screens that show
+  /// access state watch this and reload, so a title stops offering itself
+  /// for sale the moment the purchase lands — without this controller
+  /// needing to know which screens exist.
+  final RxInt grantVersion = 0.obs;
   final RxBool isMockMode = false.obs;
   final RxList<ProductDetails> products = <ProductDetails>[].obs;
   final RxString selectedProductId = ''.obs;
@@ -230,9 +237,7 @@ class InAppPurchaseController extends BaseController {
     if (verified) {
       _deliverContent(purchase);
       Utility.showSnackBar('Thank you! Your purchase was completed.');
-      if (Get.isBottomSheetOpen == true) {
-        Get.back();
-      }
+      InAppPurchaseBottomSheet.close();
     } else {
       Utility.showSnackBar(
         lastVerificationError.value.isNotEmpty
@@ -286,6 +291,11 @@ class InAppPurchaseController extends BaseController {
   /// Setting it locally used to unlock content even when verification failed.
   void _deliverContent(PurchaseDetails purchase) {
     fetchUserProfile();
+
+    // The access block a screen is holding is now stale — it was fetched
+    // before this purchase existed. Tell whoever is listening to reload
+    // rather than leave a paid title still offering itself for sale.
+    grantVersion.value++;
   }
 
   /// Grant privileges in Mock Mode (debug builds only — see purchase()).

@@ -41,6 +41,12 @@ class InfoController extends BaseController {
     // Listen to global subscription changes to update UI
     ever(BaseController.isSubscribed, (_) => _updateWatchNowText());
 
+    // A purchase made from this screen changes what the viewer may do, so
+    // reload the server's decision instead of leaving the old buttons up.
+    ever(Get.put(InAppPurchaseController()).grantVersion, (_) {
+      if (contentUuid != null) fetchContentDetail(contentUuid!);
+    });
+
     if (contentUuid != null) {
       fetchContentDetail(contentUuid!);
       fetchRecommendedContent(contentUuid!);

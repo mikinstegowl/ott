@@ -20,6 +20,11 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
   /// Heading override, e.g. the film's name on a rent/buy sheet.
   final String? title;
 
+  /// The live sheet's context, so the purchase controller can dismiss it
+  /// once the server confirms. GetX cannot: this is a plain
+  /// showModalBottomSheet, which `Get.isBottomSheetOpen` never sees.
+  static BuildContext? _sheetContext;
+
   static void show(
     BuildContext context, {
     List<String>? offerProductIds,
@@ -29,11 +34,25 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => InAppPurchaseBottomSheet(
-        offerProductIds: offerProductIds,
-        title: title,
-      ),
-    );
+      builder: (sheetContext) {
+        _sheetContext = sheetContext;
+        return InAppPurchaseBottomSheet(
+          offerProductIds: offerProductIds,
+          title: title,
+        );
+      },
+    ).whenComplete(() => _sheetContext = null);
+  }
+
+  /// Dismiss the paywall. Called after a purchase is verified, so the sheet
+  /// does not sit over a title the viewer has just paid for.
+  static void close() {
+    final ctx = _sheetContext;
+    _sheetContext = null;
+
+    if (ctx != null && ctx.mounted && Navigator.of(ctx).canPop()) {
+      Navigator.of(ctx).pop();
+    }
   }
 
   /// The heading, which has to match what is being sold. "Upgrade to VIP —
