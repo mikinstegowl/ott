@@ -71,6 +71,21 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
           ? c.subscriptionProducts
           : c.ppvProductsFor(offerProductIds!);
 
+  /// The product Continue will buy.
+  ///
+  /// The controller's selection is global, so it can be left pointing at a
+  /// product this sheet does not show — a plan while a rent sheet is open,
+  /// or the reverse. Resolving against the visible list keeps the highlight
+  /// and the button agreeing with each other, and means the first row is
+  /// always buyable without the viewer having to tap it first.
+  ProductDetails? _selected(InAppPurchaseController c) {
+    final visible = _visibleProducts(c);
+    if (visible.isEmpty) return null;
+
+    return visible.firstWhereOrNull((p) => p.id == c.selectedProductId.value) ??
+        visible.first;
+  }
+
   @override
   Widget build(BuildContext context) {
     final InAppPurchaseController controller = Get.put(InAppPurchaseController());
@@ -178,7 +193,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                 )
               else
                 ..._visibleProducts(controller).map((product) {
-                  final isSelected = controller.selectedProductId.value == product.id;
+                  final isSelected = _selected(controller)?.id == product.id;
                   return _buildProductCard(product, isSelected, () {
                     controller.selectedProductId.value = product.id;
                   });
@@ -200,9 +215,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                         _visibleProducts(controller).isEmpty
                     ? null
                     : () {
-                        final selected = _visibleProducts(controller).firstWhereOrNull(
-                          (p) => p.id == controller.selectedProductId.value,
-                        );
+                        final selected = _selected(controller);
                         if (selected != null) {
                           controller.purchase(selected);
                         }
