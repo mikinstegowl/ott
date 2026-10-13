@@ -38,7 +38,7 @@ Route<dynamic>? generateRoute(RouteSettings settings) {
         page: () => SplashScreen(
           controller: Get.put(
             SplashController(
-              onFinished: () => Get.offAllNamed(startDestination()),
+              onContinue: () => Get.offAllNamed(startDestination()),
             ),
           ),
         ),

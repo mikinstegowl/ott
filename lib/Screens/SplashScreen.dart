@@ -5,10 +5,7 @@ import 'package:get/get.dart';
 import 'package:ottapp/Const/AppColors.dart';
 import 'package:ottapp/Controllers/SplashController.dart';
 
-/// The start-up slideshow.
-///
-/// Stays black until the first slide is ready, so the app never flashes a
-/// half-drawn screen on a slow connection. Tapping anywhere skips ahead.
+/// The first screen: what is on now, and who is watching.
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key, required this.controller});
 
@@ -18,111 +15,254 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.black,
-      body: GestureDetector(
-        onTap: controller.skip,
-        behavior: HitTestBehavior.opaque,
-        child: Obx(() {
-          if (controller.slides.isEmpty) {
-            return const SizedBox.expand();
-          }
+      body: Column(
+        children: [
+          Expanded(child: _Promo(controller: controller)),
+          _ProfilePicker(controller: controller),
+        ],
+      ),
+    );
+  }
+}
 
-          final slide = controller.slides[controller.index.value];
+/// The rotating artwork. Fades into the page so the profile below feels part
+/// of the same screen rather than a panel stuck underneath.
+class _Promo extends StatelessWidget {
+  const _Promo({required this.controller});
 
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 450),
-                child: CachedNetworkImage(
-                  key: ValueKey(slide.id),
-                  imageUrl: slide.image,
-                  fit: BoxFit.cover,
-                  fadeInDuration: const Duration(milliseconds: 250),
-                  errorWidget: (_, __, ___) => const SizedBox.expand(),
-                  placeholder: (_, __) => const SizedBox.expand(),
+  final SplashController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.slides.isEmpty) {
+        return const SizedBox.expand();
+      }
+
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          PageView.builder(
+            controller: controller.pageController,
+            onPageChanged: controller.onSlideChanged,
+            itemCount: controller.slides.length,
+            itemBuilder: (_, i) {
+              final slide = controller.slides[i];
+              return CachedNetworkImage(
+                imageUrl: slide.image,
+                fit: BoxFit.cover,
+                fadeInDuration: const Duration(milliseconds: 250),
+                errorWidget: (_, __, ___) => const SizedBox.expand(),
+                placeholder: (_, __) => const SizedBox.expand(),
+              );
+            },
+          ),
+
+          // Reads over any artwork, bright or dark.
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.center,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, AppColors.black],
+                    stops: const [0.45, 1.0],
+                  ),
                 ),
               ),
+            ),
+          ),
 
-              // Wording needs a dark base or it disappears into bright artwork.
-              if (slide.hasText)
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.center,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.75),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+          Positioned(
+            left: 24.w,
+            right: 24.w,
+            bottom: 26.h,
+            child: IgnorePointer(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Obx(() {
+                    final slide = controller.slides.isEmpty
+                        ? null
+                        : controller.slides[controller.index.value];
 
-              if (slide.hasText)
-                Positioned(
-                  left: 28.w,
-                  right: 28.w,
-                  bottom: 96.h,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (slide.headline?.isNotEmpty ?? false)
-                        Text(
-                          slide.headline!,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 26.sp,
-                            fontWeight: FontWeight.w700,
-                            height: 1.2,
-                          ),
-                        ),
-                      if (slide.subheadline?.isNotEmpty ?? false)
-                        Padding(
-                          padding: EdgeInsets.only(top: 8.h),
-                          child: Text(
-                            slide.subheadline!,
+                    if (slide == null || !slide.hasText) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (slide.headline?.isNotEmpty ?? false)
+                          Text(
+                            slide.headline!,
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.82),
-                              fontSize: 15.sp,
-                              height: 1.4,
+                              color: Colors.white,
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.w700,
+                              height: 1.2,
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                ),
+                        if (slide.subheadline?.isNotEmpty ?? false)
+                          Padding(
+                            padding: EdgeInsets.only(top: 6.h),
+                            child: Text(
+                              slide.subheadline!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.85),
+                                fontSize: 14.sp,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  }),
 
-              // Progress pips, only when there is more than one slide.
-              if (controller.slides.length > 1)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 44.h,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(controller.slides.length, (i) {
-                      final current = i == controller.index.value;
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        margin: EdgeInsets.symmetric(horizontal: 3.w),
-                        width: current ? 18.w : 6.w,
-                        height: 6.h,
-                        decoration: BoxDecoration(
-                          color: current
-                              ? AppColors.appColors
-                              : Colors.white.withValues(alpha: 0.4),
-                          borderRadius: BorderRadius.circular(3.r),
+                  if (controller.slides.length > 1)
+                    Padding(
+                      padding: EdgeInsets.only(top: 14.h),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:
+                            List.generate(controller.slides.length, (i) {
+                          final current = i == controller.index.value;
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            margin: EdgeInsets.symmetric(horizontal: 3.w),
+                            width: current ? 16.w : 6.w,
+                            height: 6.h,
+                            decoration: BoxDecoration(
+                              color: current
+                                  ? AppColors.appColors
+                                  : Colors.white.withValues(alpha: 0.35),
+                              borderRadius: BorderRadius.circular(3.r),
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+}
+
+/// One profile, because one account is one person here.
+class _ProfilePicker extends StatelessWidget {
+  const _ProfilePicker({required this.controller});
+
+  final SplashController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      color: AppColors.black,
+      padding: EdgeInsets.only(top: 18.h, bottom: 42.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Who\'s watching?',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.85),
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 18.h),
+          Obx(
+            () => _ProfileTile(
+              name: controller.profileName,
+              initial: controller.profileInitial,
+              avatar: controller.profileAvatar,
+              onTap: controller.enter,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileTile extends StatelessWidget {
+  const _ProfileTile({
+    required this.name,
+    required this.initial,
+    required this.avatar,
+    required this.onTap,
+  });
+
+  final String name;
+  final String initial;
+  final String? avatar;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final side = 88.w;
+
+    return Semantics(
+      button: true,
+      label: 'Continue as $name',
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10.r),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: side,
+                height: side,
+                decoration: BoxDecoration(
+                  color: AppColors.appColors,
+                  borderRadius: BorderRadius.circular(10.r),
+                  image: (avatar != null && avatar!.isNotEmpty)
+                      ? DecorationImage(
+                          image: CachedNetworkImageProvider(avatar!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                alignment: Alignment.center,
+                child: (avatar == null || avatar!.isEmpty)
+                    ? Text(
+                        initial,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 34.sp,
+                          fontWeight: FontWeight.w700,
                         ),
-                      );
-                    }),
+                      )
+                    : null,
+              ),
+              SizedBox(height: 10.h),
+              SizedBox(
+                width: side + 24.w,
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: 14.sp,
                   ),
                 ),
+              ),
             ],
-          );
-        }),
+          ),
+        ),
       ),
     );
   }

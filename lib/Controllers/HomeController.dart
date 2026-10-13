@@ -18,6 +18,7 @@ import 'package:ottapp/Models/MagicLinkModel.dart';
 import 'package:ottapp/ChopperClientService/AuthChopperService.dart';
 import 'package:ottapp/Models/SubscriptionModel.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart';
 
 class HomeController extends BaseController with WidgetsBindingObserver {
   final HomeChopperService _homeChopperService;
@@ -105,14 +106,30 @@ class HomeController extends BaseController with WidgetsBindingObserver {
     if (isGuest) return;
     try {
       final response = await _authChopperService.getMeAPI();
+
       if (response.isSuccessful && response.body != null) {
         planName.value = response.body;
         profileData.value = response.body;
-      } else {
-        Utility.showSnackBar('Failed to load user profile', isError: true, response: response);
+        return;
       }
+
+      // The token we are holding is no longer good — it expired, or it was
+      // issued by a server we are no longer talking to. Drop it and carry on
+      // as a signed-out viewer. Shouting "Unauthenticated" at someone who
+      // simply opened the app tells them nothing they can act on.
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        debugPrint('[Auth] stored token rejected (${response.statusCode}); signing out quietly');
+        UserPreference.removeKey(key: PrefKeys.logInToken);
+        profileData.value = null;
+        BaseController.isSubscribed.value = false;
+        return;
+      }
+
+      Utility.showSnackBar('Failed to load user profile', isError: true, response: response);
     } catch (e) {
-      Utility.showSnackBar(e.toString(), isError: true, response: e);
+      // Losing the profile is not worth a banner: the catalogue still works,
+      // and the screens that need an account ask for one themselves.
+      debugPrint('[Auth] could not load profile: $e');
     }
   }
 
