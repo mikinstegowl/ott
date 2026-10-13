@@ -9,6 +9,7 @@ import 'package:ottapp/Widgets/ContentDetails/ContentMetadata.dart';
 import 'package:ottapp/Widgets/ContentDetails/ContentActionButtons.dart';
 
 import 'package:ottapp/Constants/AppUtils.dart';
+import 'package:ottapp/Widgets/ContentDetails/SponsorRail.dart';
 
 class ContentDetailView extends StatelessWidget {
   final Data? data;
@@ -109,6 +110,11 @@ class ContentDetailView extends StatelessWidget {
                   isLoading: isLoadingWatchlist,
                   isPlayLoading: isPlayLoading,
                 ),
+
+                // Sponsors sit directly under the actions, where the client
+                // asked for them: visible without scrolling, but below the
+                // controls someone came to the page to use.
+                SponsorRail(slider: data?.sponsorSlider),
                 if (ownershipLabel != null)
                   Padding(
                     padding: EdgeInsets.only(top: 10.h),

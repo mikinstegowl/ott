@@ -54,6 +54,7 @@ class Data {
   List<dynamic>? directors;
   List<Seasons>? seasons;
   bool? inWatchlist;
+  SponsorSlider? sponsorSlider;
   dynamic watchProgress;
   Meta? meta;
   Share? share;
@@ -150,6 +151,10 @@ class Data {
       });
     }
     inWatchlist = json['in_watchlist'];
+    sponsorSlider = json['sponsor_slider'] != null
+        ? SponsorSlider.fromJson(
+            Map<String, dynamic>.from(json['sponsor_slider'] as Map))
+        : null;
     watchProgress = json['watch_progress'];
     meta = json['meta'] != null ? Meta.fromJson(json['meta']) : null;
     share = json['share'] != null ? Share.fromJson(json['share']) : null;
@@ -338,6 +343,44 @@ class Share {
 /// `offers` is the list of ways in: subscribe, rent, buy. The app draws a
 /// button per offer rather than assuming a subscription is the only route —
 /// a pay-per-view title has no subscribe option at all.
+/// The sponsor strip attached to this title, if one is.
+class SponsorSlider {
+  String? title;
+  List<SponsorItem> items = [];
+
+  SponsorSlider();
+
+  SponsorSlider.fromJson(Map<String, dynamic> json) {
+    title = json['title'];
+    final list = json['items'];
+    if (list is List) {
+      items = list
+          .whereType<Map>()
+          .map((e) => SponsorItem.fromJson(Map<String, dynamic>.from(e)))
+          .where((i) => i.image.isNotEmpty)
+          .toList();
+    }
+  }
+
+  bool get hasItems => items.isNotEmpty;
+}
+
+class SponsorItem {
+  int id = 0;
+  String image = '';
+  String? url;
+  String? altText;
+
+  SponsorItem();
+
+  SponsorItem.fromJson(Map<String, dynamic> json) {
+    id = (json['id'] as num?)?.toInt() ?? 0;
+    image = (json['image'] as String?) ?? '';
+    url = json['url'];
+    altText = json['alt_text'];
+  }
+}
+
 class Access {
   String? type;
   bool? canPlay;
