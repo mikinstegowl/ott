@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ottapp/Const/AppColors.dart';
+import 'package:ottapp/Models/InfoModel.dart';
 import 'package:ottapp/Widgets/AppPrimaryButton.dart';
 
 class ContentActionButtons extends StatelessWidget {
@@ -12,6 +13,11 @@ class ContentActionButtons extends StatelessWidget {
   final bool isLoading;
   final bool isPlayLoading;
 
+  /// Rent / buy, shown beside the main button rather than under it so the
+  /// ways to watch stay on one line.
+  final List<Offer> offers;
+  final void Function(Offer)? onOffer;
+
   const ContentActionButtons({
     super.key,
     this.playText = "Watch Now",
@@ -21,6 +27,8 @@ class ContentActionButtons extends StatelessWidget {
     this.isInWatchlist = false,
     this.isLoading = false,
     this.isPlayLoading = false,
+    this.offers = const [],
+    this.onOffer,
   });
 
   @override
@@ -30,14 +38,29 @@ class ContentActionButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: double.infinity,
-            child: AppPrimaryButton(
-              text: playText,
-              onTap: onPlay ?? () {},
-              icon: Icons.play_arrow,
-              isLoading: isPlayLoading,
-            ),
+          // The main button keeps half the width and the pay-per-view options
+          // share the rest, so a title that can be subscribed to *or* bought
+          // offers both without pushing either below the fold.
+          Row(
+            children: [
+              Expanded(
+                flex: offers.isEmpty ? 1 : 2,
+                child: AppPrimaryButton(
+                  text: playText,
+                  onTap: onPlay ?? () {},
+                  icon: Icons.play_arrow,
+                  isLoading: isPlayLoading,
+                ),
+              ),
+              ...offers.map(
+                (offer) => Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8.w),
+                    child: _buildOfferButton(offer),
+                  ),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 15.h),
           Row(
@@ -60,6 +83,50 @@ class ContentActionButtons extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  /// Compact on purpose: at a quarter of the width there is room for the
+  /// word and the price, and nothing else. The rental window is left to the
+  /// sheet that opens on tap.
+  Widget _buildOfferButton(Offer offer) {
+    return SizedBox(
+      height: 48.h,
+      child: OutlinedButton(
+        onPressed: onOffer == null ? null : () => onOffer!(offer),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: AppColors.white.withValues(alpha: 0.4)),
+          padding: EdgeInsets.symmetric(horizontal: 6.w),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                offer.type == 'rent'
+                    ? Icons.schedule
+                    : Icons.shopping_bag_outlined,
+                size: 15.sp,
+                color: AppColors.white,
+              ),
+              SizedBox(width: 5.w),
+              Text(
+                offer.label,
+                maxLines: 1,
+                style: TextStyle(
+                  color: AppColors.white,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

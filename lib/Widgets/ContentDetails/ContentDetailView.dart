@@ -109,6 +109,8 @@ class ContentDetailView extends StatelessWidget {
                   onShare: onShare,
                   isLoading: isLoadingWatchlist,
                   isPlayLoading: isPlayLoading,
+                  offers: offers,
+                  onOffer: onOffer,
                 ),
 
                 // Sponsors sit directly under the actions, where the client
@@ -129,42 +131,6 @@ class ContentDetailView extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ],
-                    ),
-                  ),
-
-                // Rent / buy. A pay-per-view title has no subscribe route, so
-                // without these the viewer has no way to watch at all.
-                if (offers.isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.only(top: 12.h),
-                    child: Wrap(
-                      spacing: 10.w,
-                      runSpacing: 10.h,
-                      children: offers.map((offer) {
-                        return OutlinedButton.icon(
-                          onPressed: onOffer == null ? null : () => onOffer!(offer),
-                          icon: Icon(
-                            offer.type == 'rent' ? Icons.schedule : Icons.shopping_bag_outlined,
-                            size: 18.sp,
-                            color: AppColors.white,
-                          ),
-                          label: AppTextWidget(
-                            text: offer.type == 'rent' && offer.watchHours != null
-                                ? '${offer.label} · ${offer.watchHours}h'
-                                : offer.label,
-                            color: AppColors.white,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: AppColors.white.withValues(alpha: 0.4)),
-                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                          ),
-                        );
-                      }).toList(),
                     ),
                   ),
 
