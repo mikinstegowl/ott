@@ -144,42 +144,73 @@ class _ProfilePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // A wide, shallow arc across the whole width — not a rounded corner.
-        // A circular radius large enough to span the screen turns the panel
-        // into a dome; an ellipse keeps the edge gentle.
-        final width = constraints.maxWidth;
+    final rise = 54.h;
 
-        return Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            // Starts at the artwork's black and lifts to the sheet colour, so
-            // the join reads as the panel rising out of the picture rather
-            // than as a band stuck underneath it.
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF111113), Color(0xFF2E2E33)],
-              stops: [0.0, 0.55],
-            ),
-            borderRadius: BorderRadius.vertical(
-              top: Radius.elliptical(width / 2, 50.h),
-            ),
-          ),
-          padding: EdgeInsets.only(top: 56.h, bottom: 74.h),
-          child: Obx(
-            () => _ProfileTile(
-              name: controller.profileName,
-              initial: controller.profileInitial,
-              avatar: controller.profileAvatar,
-              onTap: controller.enter,
+    return SizedBox(
+      height: 300.h,
+      child: Stack(
+        children: [
+          Positioned.fill(child: CustomPaint(painter: _SheetPainter(rise: rise))),
+
+          // Centred in the panel below the curve, not pinned under it.
+          Positioned(
+            left: 0,
+            right: 0,
+            top: rise,
+            bottom: 0,
+            child: Center(
+              child: Obx(
+                () => _ProfileTile(
+                  name: controller.profileName,
+                  initial: controller.profileInitial,
+                  avatar: controller.profileAvatar,
+                  onTap: controller.enter,
+                ),
+              ),
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
+}
+
+/// The panel's curved top.
+///
+/// A border radius cannot do this: an elliptical corner wide enough to span
+/// the screen still meets the sides at an angle, which shows as a kink at both
+/// ends. A curve that starts on the edge and leans into the middle meets the
+/// sides smoothly, which is what the reference does.
+class _SheetPainter extends CustomPainter {
+  const _SheetPainter({required this.rise});
+
+  /// How far the middle of the curve sits above its ends.
+  final double rise;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(0, rise)
+      ..quadraticBezierTo(size.width / 2, -rise * 0.15, size.width, rise)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    // Starts at the artwork's black and lifts to the sheet colour, so the join
+    // reads as the panel rising out of the picture.
+    final paint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFF151517), Color(0xFF2E2E33)],
+        stops: [0.0, 0.5],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_SheetPainter old) => old.rise != rise;
 }
 
 class _ProfileTile extends StatelessWidget {
