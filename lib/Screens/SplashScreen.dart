@@ -51,7 +51,8 @@ class _Promo extends StatelessWidget {
               return CachedNetworkImage(
                 imageUrl: slide.image,
                 fit: BoxFit.cover,
-                fadeInDuration: const Duration(milliseconds: 250),
+                fadeInDuration: Duration.zero,
+                fadeOutDuration: Duration.zero,
                 errorWidget: (_, __, ___) => const SizedBox.expand(),
                 placeholder: (_, __) => const SizedBox.expand(),
               );
@@ -122,29 +123,6 @@ class _Promo extends StatelessWidget {
                     );
                   }),
 
-                  if (controller.slides.length > 1)
-                    Padding(
-                      padding: EdgeInsets.only(top: 14.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children:
-                            List.generate(controller.slides.length, (i) {
-                          final current = i == controller.index.value;
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 250),
-                            margin: EdgeInsets.symmetric(horizontal: 3.w),
-                            width: current ? 16.w : 6.w,
-                            height: 6.h,
-                            decoration: BoxDecoration(
-                              color: current
-                                  ? AppColors.appColors
-                                  : Colors.white.withValues(alpha: 0.35),
-                              borderRadius: BorderRadius.circular(3.r),
-                            ),
-                          );
-                        }),
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -171,7 +149,7 @@ class _ProfilePicker extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Who\'s watching?',
+            'Choose your profile',
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.85),
               fontSize: 16.sp,
@@ -215,7 +193,7 @@ class _ProfileTile extends StatelessWidget {
       label: 'Continue as $name',
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10.r),
+        customBorder: const CircleBorder(),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
           child: Column(
@@ -226,7 +204,7 @@ class _ProfileTile extends StatelessWidget {
                 height: side,
                 decoration: BoxDecoration(
                   color: AppColors.appColors,
-                  borderRadius: BorderRadius.circular(10.r),
+                  shape: BoxShape.circle,
                   image: (avatar != null && avatar!.isNotEmpty)
                       ? DecorationImage(
                           image: CachedNetworkImageProvider(avatar!),

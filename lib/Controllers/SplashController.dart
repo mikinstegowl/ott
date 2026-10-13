@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ottapp/ChopperClientService/HomeChopperService.dart';
@@ -40,11 +39,15 @@ class SplashController extends BaseController {
   bool _entered = false;
 
   /// The name on the profile tile.
+  ///
+  /// Falls back to Guest rather than something vague like "You": if we have no
+  /// name it is because nobody is signed in, and saying so is more honest than
+  /// addressing an account we do not have.
   String get profileName {
     final name = profileData.value?.data?.name;
     if (name != null && name.trim().isNotEmpty) return name.trim();
 
-    return isGuest ? 'Guest' : 'You';
+    return 'Guest';
   }
 
   String get profileInitial {
