@@ -83,18 +83,18 @@ class InfoController extends BaseController {
       if (a.canPlay == true) {
         watchNowText.value = "Watch Now";
       } else if (a.hasSubscribe) {
-        watchNowText.value = "Subscribe To Watch";
+        watchNowText.value = "Subscribe";
       } else {
         // Pay-per-view only — subscribing would not unlock it, so the primary
         // button must not promise that.
-        watchNowText.value = "Rent or Buy To Watch";
+        watchNowText.value = "Rent or Buy";
       }
       return;
     }
 
     if (contentData.value?.data?.isFree == false &&
         !BaseController.isSubscribed.value) {
-      watchNowText.value = "Subscribe To Watch";
+      watchNowText.value = "Subscribe";
     } else {
       watchNowText.value = "Watch Now";
     }

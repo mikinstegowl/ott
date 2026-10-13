@@ -39,24 +39,31 @@ class _Promo extends StatelessWidget {
         return const SizedBox.expand();
       }
 
+      final slide = controller.slides[controller.index.value];
+
       return Stack(
         fit: StackFit.expand,
         children: [
-          PageView.builder(
-            controller: controller.pageController,
-            onPageChanged: controller.onSlideChanged,
-            itemCount: controller.slides.length,
-            itemBuilder: (_, i) {
-              final slide = controller.slides[i];
-              return CachedNetworkImage(
-                imageUrl: slide.image,
-                fit: BoxFit.cover,
-                fadeInDuration: Duration.zero,
-                fadeOutDuration: Duration.zero,
-                errorWidget: (_, __, ___) => const SizedBox.expand(),
-                placeholder: (_, __) => const SizedBox.expand(),
-              );
-            },
+          // One slide dissolves into the next while drifting slowly closer.
+          // A slide-across reads as a carousel the viewer is meant to operate;
+          // this reads as a backdrop, which is what it is.
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 900),
+            switchInCurve: Curves.easeOut,
+            switchOutCurve: Curves.easeIn,
+            layoutBuilder: (current, previous) => Stack(
+              fit: StackFit.expand,
+              children: [...previous, if (current != null) current],
+            ),
+            child: _KenBurns(
+              key: ValueKey(slide.id),
+              imageUrl: slide.image,
+              // Match the drift to how long the slide is up, so the movement
+              // never stops early and sits still.
+              duration: Duration(
+                milliseconds: controller.durationFor(slide) + 900,
+              ),
+            ),
           ),
 
           // Reads over any artwork, bright or dark.
@@ -83,46 +90,32 @@ class _Promo extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Obx(() {
-                    final slide = controller.slides.isEmpty
-                        ? null
-                        : controller.slides[controller.index.value];
-
-                    if (slide == null || !slide.hasText) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (slide.headline?.isNotEmpty ?? false)
-                          Text(
-                            slide.headline!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.w700,
-                              height: 1.2,
-                            ),
+                  if (slide.hasText) ...[
+                    if (slide.headline?.isNotEmpty ?? false)
+                      Text(
+                        slide.headline!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w700,
+                          height: 1.2,
+                        ),
+                      ),
+                    if (slide.subheadline?.isNotEmpty ?? false)
+                      Padding(
+                        padding: EdgeInsets.only(top: 6.h),
+                        child: Text(
+                          slide.subheadline!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.85),
+                            fontSize: 14.sp,
+                            height: 1.4,
                           ),
-                        if (slide.subheadline?.isNotEmpty ?? false)
-                          Padding(
-                            padding: EdgeInsets.only(top: 6.h),
-                            child: Text(
-                              slide.subheadline!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.85),
-                                fontSize: 14.sp,
-                                height: 1.4,
-                              ),
-                            ),
-                          ),
-                      ],
-                    );
-                  }),
-
+                        ),
+                      ),
+                  ],
                 ],
               ),
             ),
@@ -130,6 +123,55 @@ class _Promo extends StatelessWidget {
         ],
       );
     });
+  }
+}
+
+/// One slide, drifting slowly closer while it is on screen.
+class _KenBurns extends StatefulWidget {
+  const _KenBurns({
+    super.key,
+    required this.imageUrl,
+    required this.duration,
+  });
+
+  final String imageUrl;
+  final Duration duration;
+
+  @override
+  State<_KenBurns> createState() => _KenBurnsState();
+}
+
+class _KenBurnsState extends State<_KenBurns>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: widget.duration,
+  )..forward();
+
+  late final Animation<double> _scale = Tween<double>(
+    begin: 1.0,
+    end: 1.12,
+  ).animate(CurvedAnimation(parent: _c, curve: Curves.linear));
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scale,
+      child: CachedNetworkImage(
+        imageUrl: widget.imageUrl,
+        fit: BoxFit.cover,
+        fadeInDuration: Duration.zero,
+        fadeOutDuration: Duration.zero,
+        errorWidget: (_, __, ___) => const SizedBox.expand(),
+        placeholder: (_, __) => const SizedBox.expand(),
+      ),
+    );
   }
 }
 

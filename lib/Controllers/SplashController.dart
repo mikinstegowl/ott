@@ -34,8 +34,6 @@ class SplashController extends BaseController {
   final RxInt index = 0.obs;
   final RxBool ready = false.obs;
 
-  final PageController pageController = PageController();
-
   int _defaultDurationMs = 3000;
   Timer? _advance;
   bool _entered = false;
@@ -99,12 +97,15 @@ class SplashController extends BaseController {
     if (slides.length > 1) _scheduleNext();
   }
 
+  /// How long a slide stays on screen.
+  int durationFor(SplashSlide slide) => slide.durationMs ?? _defaultDurationMs;
+
   /// Cycles the slider. Unlike the old full-screen splash this loops rather
   /// than ending, because nothing happens until the viewer taps.
   void _scheduleNext() {
     _advance?.cancel();
 
-    final ms = slides[index.value].durationMs ?? _defaultDurationMs;
+    final ms = durationFor(slides[index.value]);
 
     _advance = Timer(Duration(milliseconds: ms), () {
       if (slides.isEmpty) return;
@@ -112,22 +113,8 @@ class SplashController extends BaseController {
       final next = (index.value + 1) % slides.length;
       index.value = next;
 
-      if (pageController.hasClients) {
-        pageController.animateToPage(
-          next,
-          duration: const Duration(milliseconds: 450),
-          curve: Curves.easeInOut,
-        );
-      }
-
       _scheduleNext();
     });
-  }
-
-  /// A swipe should not fight the timer, so restart it from the new slide.
-  void onSlideChanged(int i) {
-    index.value = i;
-    if (slides.length > 1) _scheduleNext();
   }
 
   void enter() {
@@ -141,7 +128,6 @@ class SplashController extends BaseController {
   @override
   void onClose() {
     _advance?.cancel();
-    pageController.dispose();
     super.onClose();
   }
 }

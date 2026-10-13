@@ -111,7 +111,7 @@ class ContentActionButtons extends StatelessWidget {
                 offer.type == 'rent'
                     ? Icons.schedule
                     : Icons.shopping_bag_outlined,
-                size: 15.sp,
+                size: 14.sp,
                 color: AppColors.white,
               ),
               SizedBox(width: 5.w),
@@ -120,7 +120,7 @@ class ContentActionButtons extends StatelessWidget {
                 maxLines: 1,
                 style: TextStyle(
                   color: AppColors.white,
-                  fontSize: 13.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                 ),
               ),
