@@ -141,23 +141,34 @@ class _ProfilePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      color: AppColors.black,
-      padding: EdgeInsets.only(top: 18.h, bottom: 42.h),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // The heading sits on the artwork's black, above the sheet, so the
+        // curve reads as the sheet rising rather than as a stray divider.
+        Padding(
+          padding: EdgeInsets.only(bottom: 14.h),
+          child: Text(
             'Choose your profile',
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.85),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 18.h),
-          Obx(
+        ),
+
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: const Color(0xFF2B2B30),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(160.r),
+              topRight: Radius.circular(160.r),
+            ),
+          ),
+          padding: EdgeInsets.only(top: 22.h, bottom: 38.h),
+          child: Obx(
             () => _ProfileTile(
               name: controller.profileName,
               initial: controller.profileInitial,
@@ -165,8 +176,8 @@ class _ProfilePicker extends StatelessWidget {
               onTap: controller.enter,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -193,7 +204,7 @@ class _ProfileTile extends StatelessWidget {
       label: 'Continue as $name',
       child: InkWell(
         onTap: onTap,
-        customBorder: const CircleBorder(),
+        borderRadius: BorderRadius.circular(14.r),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
           child: Column(
@@ -204,7 +215,7 @@ class _ProfileTile extends StatelessWidget {
                 height: side,
                 decoration: BoxDecoration(
                   color: AppColors.appColors,
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(14.r),
                   image: (avatar != null && avatar!.isNotEmpty)
                       ? DecorationImage(
                           image: CachedNetworkImageProvider(avatar!),
