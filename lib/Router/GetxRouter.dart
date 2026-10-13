@@ -27,9 +27,24 @@ import 'package:ottapp/Screens/SearchScreen.dart';
 import 'package:ottapp/Bindings/SearchControllerBindings.dart';
 
 import 'package:ottapp/Screens/ReelShortsScreen.dart';
+import 'package:ottapp/Screens/SplashScreen.dart';
+import 'package:ottapp/Controllers/SplashController.dart';
 
 Route<dynamic>? generateRoute(RouteSettings settings) {
   switch (settings.name) {
+    case RoutesName.splashScreen:
+      return getPageRoutes(
+        routeName: RoutesName.splashScreen,
+        page: () => SplashScreen(
+          controller: Get.put(
+            SplashController(
+              onFinished: () => Get.offAllNamed(startDestination()),
+            ),
+          ),
+        ),
+        settings: settings,
+        bindings: [BaseControllerBindings()],
+      );
     case RoutesName.registerScreen:
       return getPageRoutes(
         routeName: RoutesName.registerScreen,

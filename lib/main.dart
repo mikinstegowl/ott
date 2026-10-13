@@ -10,7 +10,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:ottapp/Bindings/BaseControllerBindings.dart';
 import 'package:ottapp/Router/GetxRouter.dart';
 import 'package:ottapp/Router/RouterName.dart';
-import 'package:ottapp/SharedPreferences/PrefKeys.dart';
 import 'package:ottapp/SharedPreferences/shared_preferences.dart';
 import 'package:ottapp/firebase_options.dart';
 
@@ -64,12 +63,9 @@ class MyApp extends StatelessWidget {
               PointerDeviceKind.trackpad,
             },
           ),
-          initialRoute:
-              (Platform.isIOS ||
-               UserPreference.getValue(key: PrefKeys.logInToken) != null ||
-               UserPreference.getValue(key: PrefKeys.skipUser) == true)
-                  ? RoutesName.mainWrapper
-                  : RoutesName.logInScreen,
+          // Always the slideshow first; it decides where to go next, and
+          // goes straight through when the server has no slides.
+          initialRoute: RoutesName.splashScreen,
           theme: ThemeData.dark().copyWith(
             scaffoldBackgroundColor: AppColors.black,
             primaryColor: AppColors.appColors,

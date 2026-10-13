@@ -126,6 +126,10 @@ abstract class HomeChopperService extends ChopperService {
     @Query('placement') String placement,
   );
 
+  /// The start-up slideshow. Public, so it works before sign-in.
+  @GET(path: 'app/splash')
+  Future<Response<dynamic>> getSplashSlides();
+
   @GET(path: 'live-video')
   Future<Response<LiveVideoModel>> getLiveVideoAPI();
 

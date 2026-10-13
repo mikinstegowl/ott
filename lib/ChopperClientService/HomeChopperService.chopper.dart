@@ -219,6 +219,13 @@ final class _$HomeChopperService extends HomeChopperService {
   }
 
   @override
+  Future<Response<dynamic>> getSplashSlides() {
+    final Uri $url = Uri.parse('app/splash');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<LiveVideoModel>> getLiveVideoAPI() {
     final Uri $url = Uri.parse('live-video');
     final Request $request = Request('GET', $url, client.baseUrl);
