@@ -48,7 +48,7 @@ class _Promo extends StatelessWidget {
           // A slide-across reads as a carousel the viewer is meant to operate;
           // this reads as a backdrop, which is what it is.
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 900),
+            duration: const Duration(milliseconds: 1400),
             switchInCurve: Curves.easeOut,
             switchOutCurve: Curves.easeIn,
             layoutBuilder: (current, previous) => Stack(
@@ -61,7 +61,7 @@ class _Promo extends StatelessWidget {
               // Match the drift to how long the slide is up, so the movement
               // never stops early and sits still.
               duration: Duration(
-                milliseconds: controller.durationFor(slide) + 900,
+                milliseconds: controller.durationFor(slide) + 1400,
               ),
             ),
           ),
@@ -150,7 +150,7 @@ class _KenBurnsState extends State<_KenBurns>
 
   late final Animation<double> _scale = Tween<double>(
     begin: 1.0,
-    end: 1.12,
+    end: 1.08,
   ).animate(CurvedAnimation(parent: _c, curve: Curves.linear));
 
   @override

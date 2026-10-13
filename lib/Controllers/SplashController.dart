@@ -34,7 +34,7 @@ class SplashController extends BaseController {
   final RxInt index = 0.obs;
   final RxBool ready = false.obs;
 
-  int _defaultDurationMs = 3000;
+  int _defaultDurationMs = 10000;
   Timer? _advance;
   bool _entered = false;
 
