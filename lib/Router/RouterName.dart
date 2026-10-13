@@ -35,3 +35,11 @@ String startDestination() {
       ? RoutesName.mainWrapper
       : RoutesName.logInScreen;
 }
+
+/// Whether to show the start-up slideshow at all.
+///
+/// It greets someone by name and offers their profile, which only means
+/// anything once they have signed in. A signed-out viewer would be shown a
+/// nameless tile for no reason, so they go straight through.
+bool shouldShowSplash() =>
+    UserPreference.getValue(key: PrefKeys.logInToken) != null;

@@ -63,9 +63,11 @@ class MyApp extends StatelessWidget {
               PointerDeviceKind.trackpad,
             },
           ),
-          // Always the slideshow first; it decides where to go next, and
-          // goes straight through when the server has no slides.
-          initialRoute: RoutesName.splashScreen,
+          // The slideshow greets the viewer by name, so it is only shown
+          // once there is a name to greet.
+          initialRoute: shouldShowSplash()
+              ? RoutesName.splashScreen
+              : startDestination(),
           theme: ThemeData.dark().copyWith(
             scaffoldBackgroundColor: AppColors.black,
             primaryColor: AppColors.appColors,

@@ -15,6 +15,7 @@ import 'package:ottapp/SharedPreferences/shared_preferences.dart';
 import 'package:ottapp/Widgets/AppTextFieldWidget.dart';
 import 'package:ottapp/Widgets/InAppPurchase/InAppPurchaseBottomSheet.dart';
 import 'package:ottapp/Constants/CustomSnackBar.dart';
+import 'package:flutter/foundation.dart';
 
 class BaseController extends GetxController {
   RxBool isLoading = false.obs;
@@ -44,11 +45,23 @@ class BaseController extends GetxController {
     try {
       final authService = AppChopperClient().getChopperService<AuthChopperService>();
       final response = await authService.getMeAPI();
+
       if (response.isSuccessful && response.body != null) {
         profileData.value = response.body;
+        return;
+      }
+
+      // The token we are holding is no longer good — expired, or issued by a
+      // server we no longer talk to. Drop it so the app stops believing it is
+      // signed in and showing a nameless profile.
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        debugPrint('[Auth] stored token rejected (${response.statusCode}); clearing it');
+        UserPreference.removeKey(key: PrefKeys.logInToken);
+        profileData.value = null;
+        isSubscribed.value = false;
       }
     } catch (e) {
-      print("BaseController: Error fetching profile: $e");
+      debugPrint('[Auth] could not load profile: $e');
     }
   }
 

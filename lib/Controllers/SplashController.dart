@@ -6,6 +6,8 @@ import 'package:ottapp/ChopperClientService/HomeChopperService.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
 import 'package:ottapp/Models/SplashModel.dart';
 import 'package:ottapp/Network/AppChopperClient.dart';
+import 'package:ottapp/SharedPreferences/PrefKeys.dart';
+import 'package:ottapp/SharedPreferences/shared_preferences.dart';
 
 /// The screen the app opens on: a promotional slider above, and the profile
 /// to watch as below.
@@ -60,7 +62,19 @@ class SplashController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    _confirmSession();
     _loadSlides();
+  }
+
+  /// The route only sends us here when a token exists, but a token can be
+  /// stale. If the server rejects it, BaseController clears it — and then
+  /// there is nobody to greet, so go straight on to signing in.
+  Future<void> _confirmSession() async {
+    await fetchUserProfile();
+
+    if (UserPreference.getValue(key: PrefKeys.logInToken) == null) {
+      enter();
+    }
   }
 
   Future<void> _loadSlides() async {

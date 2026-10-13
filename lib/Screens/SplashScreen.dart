@@ -134,6 +134,9 @@ class _Promo extends StatelessWidget {
 }
 
 /// One profile, because one account is one person here.
+///
+/// There is no heading: "choose your profile" asks a question that has only
+/// one answer. The tile is the whole invitation.
 class _ProfilePicker extends StatelessWidget {
   const _ProfilePicker({required this.controller});
 
@@ -141,51 +144,40 @@ class _ProfilePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // The heading sits on the artwork's black, above the sheet, so the
-        // curve reads as the sheet rising rather than as a stray divider.
-        Padding(
-          padding: EdgeInsets.only(bottom: 16.h),
-          child: Text(
-            'Choose your profile',
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.9),
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w500,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // A wide, shallow arc across the whole width — not a rounded corner.
+        // A circular radius large enough to span the screen turns the panel
+        // into a dome; an ellipse keeps the edge gentle.
+        final width = constraints.maxWidth;
+
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            // Starts at the artwork's black and lifts to the sheet colour, so
+            // the join reads as the panel rising out of the picture rather
+            // than as a band stuck underneath it.
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF111113), Color(0xFF2E2E33)],
+              stops: [0.0, 0.55],
+            ),
+            borderRadius: BorderRadius.vertical(
+              top: Radius.elliptical(width / 2, 50.h),
             ),
           ),
-        ),
-
-        LayoutBuilder(
-          builder: (context, constraints) {
-            // A wide, shallow arc across the whole width — not a rounded
-            // corner. A circular radius large enough to span the screen turns
-            // the panel into a dome; an ellipse keeps the edge gentle.
-            final width = constraints.maxWidth;
-
-            return Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: const Color(0xFF2A2A2E),
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.elliptical(width / 2, 44.h),
-                ),
-              ),
-              padding: EdgeInsets.only(top: 34.h, bottom: 40.h),
-              child: Obx(
-                () => _ProfileTile(
-                  name: controller.profileName,
-                  initial: controller.profileInitial,
-                  avatar: controller.profileAvatar,
-                  onTap: controller.enter,
-                ),
-              ),
-            );
-          },
-        ),
-      ],
+          padding: EdgeInsets.only(top: 56.h, bottom: 74.h),
+          child: Obx(
+            () => _ProfileTile(
+              name: controller.profileName,
+              initial: controller.profileInitial,
+              avatar: controller.profileAvatar,
+              onTap: controller.enter,
+            ),
+          ),
+        );
+      },
     );
   }
 }
