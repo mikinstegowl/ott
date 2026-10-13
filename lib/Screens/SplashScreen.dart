@@ -147,35 +147,43 @@ class _ProfilePicker extends StatelessWidget {
         // The heading sits on the artwork's black, above the sheet, so the
         // curve reads as the sheet rising rather than as a stray divider.
         Padding(
-          padding: EdgeInsets.only(bottom: 14.h),
+          padding: EdgeInsets.only(bottom: 16.h),
           child: Text(
             'Choose your profile',
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.9),
-              fontSize: 16.sp,
+              fontSize: 15.sp,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
 
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: const Color(0xFF2B2B30),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(160.r),
-              topRight: Radius.circular(160.r),
-            ),
-          ),
-          padding: EdgeInsets.only(top: 22.h, bottom: 38.h),
-          child: Obx(
-            () => _ProfileTile(
-              name: controller.profileName,
-              initial: controller.profileInitial,
-              avatar: controller.profileAvatar,
-              onTap: controller.enter,
-            ),
-          ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            // A wide, shallow arc across the whole width — not a rounded
+            // corner. A circular radius large enough to span the screen turns
+            // the panel into a dome; an ellipse keeps the edge gentle.
+            final width = constraints.maxWidth;
+
+            return Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A2A2E),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.elliptical(width / 2, 44.h),
+                ),
+              ),
+              padding: EdgeInsets.only(top: 34.h, bottom: 40.h),
+              child: Obx(
+                () => _ProfileTile(
+                  name: controller.profileName,
+                  initial: controller.profileInitial,
+                  avatar: controller.profileAvatar,
+                  onTap: controller.enter,
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -197,16 +205,17 @@ class _ProfileTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final side = 88.w;
+    final side = 80.w;
+    final radius = 16.r;
 
     return Semantics(
       button: true,
       label: 'Continue as $name',
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14.r),
+        borderRadius: BorderRadius.circular(radius),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -215,7 +224,7 @@ class _ProfileTile extends StatelessWidget {
                 height: side,
                 decoration: BoxDecoration(
                   color: AppColors.appColors,
-                  borderRadius: BorderRadius.circular(14.r),
+                  borderRadius: BorderRadius.circular(radius),
                   image: (avatar != null && avatar!.isNotEmpty)
                       ? DecorationImage(
                           image: CachedNetworkImageProvider(avatar!),
@@ -229,22 +238,22 @@ class _ProfileTile extends StatelessWidget {
                         initial,
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 34.sp,
+                          fontSize: 30.sp,
                           fontWeight: FontWeight.w700,
                         ),
                       )
                     : null,
               ),
-              SizedBox(height: 10.h),
+              SizedBox(height: 12.h),
               SizedBox(
-                width: side + 24.w,
+                width: side + 40.w,
                 child: Text(
                   name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: Colors.white.withValues(alpha: 0.88),
                     fontSize: 14.sp,
                   ),
                 ),
