@@ -29,7 +29,15 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
     BuildContext context, {
     List<String>? offerProductIds,
     String? title,
+    String? preselect,
   }) {
+    // Someone who tapped Rent must not find Buy selected when the sheet opens:
+    // the next tap is Continue, and buying costs several times what renting
+    // does.
+    if (preselect != null && preselect.isNotEmpty) {
+      Get.put(InAppPurchaseController()).selectedProductId.value = preselect;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

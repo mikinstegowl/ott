@@ -131,6 +131,7 @@ class InfoController extends BaseController {
         Get.context!,
         offerProductIds: ids,
         title: contentData.value?.data?.title,
+        preselect: Platform.isIOS ? offer.appleProductId : offer.googleProductId,
       );
     }
   }
@@ -230,15 +231,20 @@ class InfoController extends BaseController {
       return;
     }
 
-    // If it's paid, verify subscription status from API
-    if (contentData.value?.data?.isFree == false) {
+    // A pay-per-view title is not unlocked by subscribing, so this shortcut
+    // must not run for one: it offered plans to someone who would still not
+    // be able to watch after paying for them. The server's own decision,
+    // which knows the difference, is used instead.
+    final canSubscribeIntoIt = access?.hasSubscribe ?? true;
+
+    if (contentData.value?.data?.isFree == false && canSubscribeIntoIt) {
       try {
         isPlayingContent.value = true;
         final subResponse = await homeChopperService.getSubscriptionAPI();
-        
+
         if (subResponse.isSuccessful && subResponse.body != null) {
           final subData = subResponse.body!;
-          
+
           if (subData.hasSubscription == false) {
             if (Get.context != null && Get.context!.mounted) {
               InAppPurchaseBottomSheet.show(Get.context!);
