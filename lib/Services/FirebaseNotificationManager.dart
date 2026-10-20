@@ -58,8 +58,8 @@ class FirebaseNotificationManager {
     FirebaseMessaging.onMessage.listen((message) async {
       if (Platform.isAndroid) {
         var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-          "1",
-          'jrtransportation',
+          "trebolplus_default",
+          'TrebolPlus',
           importance: Importance.max,
           priority: Priority.high,
         );
@@ -113,19 +113,41 @@ class FirebaseNotificationManager {
 /// Background message handler for Firebase notifications.
 @pragma('vm:entry-point')
 Future<void> firebaseBackgroundMessage(RemoteMessage message) async {
-  final notification = FlutterLocalNotificationsPlugin();
-
-  // Initialize Firebase based on platform safely to avoid duplicate app initialization errors
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
 
-  // Notification details
+  // A message carrying a notification block is drawn by Android itself while
+  // the app is in the background. Drawing another here produced a second,
+  // empty one: this runs in its own isolate, so the plugin built above has
+  // never been initialised and shows a notification with nothing in it.
+  if (message.notification != null) {
+    return;
+  }
+
+  // Data-only messages have nothing to show unless we do it, and the plugin
+  // has to be initialised in this isolate before it can.
+  final title = message.data['title'];
+  final body = message.data['body'];
+
+  if (title == null && body == null) {
+    return;
+  }
+
+  final notification = FlutterLocalNotificationsPlugin();
+
+  await notification.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      iOS: DarwinInitializationSettings(),
+    ),
+  );
+
   var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-    '1',
-    'jrtransportation',
+    'trebolplus_default',
+    'TrebolPlus',
     importance: Importance.max,
     priority: Priority.high,
   );
@@ -135,11 +157,10 @@ Future<void> firebaseBackgroundMessage(RemoteMessage message) async {
     iOS: iOSPlatformChannelSpecifics,
   );
 
-  // Show the notification
   await notification.show(
     1002,
-    message.notification?.title,
-    message.notification?.body,
+    title,
+    body,
     platformChannelSpecifics,
   );
 
