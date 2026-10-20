@@ -265,11 +265,15 @@ class InfoController extends BaseController {
             RoutesName.playerScreen,
             arguments: {'uuid': contentUuid, 'type': 'movie'},
           );
-        } else if (response.body!.code == "SUBSCRIPTION_REQUIRED") {
-          if (Get.context != null && Get.context!.mounted) {
-            InAppPurchaseBottomSheet.show(Get.context!);
-          }
+        } else {
+          _openPaywallFor(response.body!.code);
         }
+      } else if (response.statusCode == 403 || response.statusCode == 402) {
+        // A refusal to play is the paywall's cue, not an error to report. The
+        // server answers with its own code here, and has for long enough that
+        // several are in circulation, so treat the refusal itself as the
+        // signal rather than matching on one spelling of it.
+        _openPaywallFor(response.body?.code);
       } else {
         Utility.showSnackBar("Unable to play content", isError: true, response: response);
       }
@@ -279,6 +283,39 @@ class InfoController extends BaseController {
     } finally {
       isPlayingContent.value = false;
     }
+  }
+
+  /// Show the right way to pay for this title.
+  ///
+  /// A pay-per-view title has no subscribe route, so offering plans there
+  /// leaves the viewer with no way to watch at all.
+  void _openPaywallFor(String? code) {
+    if (Get.context == null || !Get.context!.mounted) return;
+
+    if (code == 'NOT_RELEASED') {
+      Utility.showSnackBar('This title is not available to watch yet.');
+      return;
+    }
+
+    final ids = ppvOffers
+        .map((o) => Platform.isIOS ? o.appleProductId : o.googleProductId)
+        .whereType<String>()
+        .toList();
+
+    if (ids.isNotEmpty && !(access?.hasSubscribe ?? true)) {
+      final iap = Get.put(InAppPurchaseController());
+      iap.pendingContentUuid = contentUuid;
+      iap.pendingLiveUuid = null;
+
+      InAppPurchaseBottomSheet.show(
+        Get.context!,
+        offerProductIds: ids,
+        title: contentData.value?.data?.title,
+      );
+      return;
+    }
+
+    InAppPurchaseBottomSheet.show(Get.context!);
   }
 
   void playEpisode(Episodes episode) async {
