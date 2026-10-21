@@ -72,8 +72,19 @@ class InfoController extends BaseController {
     }
     if (p.type == 'buy') return 'Purchased';
     if (p.startsAt == null) return 'Rented — not started yet';
-    final hours = ((p.secondsRemaining ?? 0) / 3600).round();
-    return 'Rented · \${hours}h left';
+
+    // Hours alone reads as "0h left" for the whole final hour, which is the
+    // hour someone is most likely to be looking at this.
+    final seconds = p.secondsRemaining ?? 0;
+
+    if (seconds <= 0) return 'Rental ended';
+
+    if (seconds < 3600) {
+      final minutes = (seconds / 60).ceil();
+      return 'Rented · ${minutes}m left';
+    }
+
+    return 'Rented · ${(seconds / 3600).floor()}h left';
   }
 
   void _updateWatchNowText() {
