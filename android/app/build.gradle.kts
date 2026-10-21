@@ -30,8 +30,11 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 15
-        versionName = "1.0.6"
+        // Read from pubspec.yaml, like the SDK versions above, so a release
+        // is numbered in one place. Hardcoding these meant --build-number was
+        // silently ignored and every build carried the same version code.
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
     }
 
     signingConfigs {
