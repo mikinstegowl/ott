@@ -203,7 +203,9 @@ class ShareDialogWidget extends StatelessWidget {
 );
   }
 
-  Widget _buildSocialIcon(IconData icon, String label, String platform) {
+  // font_awesome_flutter 11 introduced its own FaIconData rather than
+  // extending IconData, which Flutter made final.
+  Widget _buildSocialIcon(FaIconData icon, String label, String platform) {
     return GestureDetector(
       onTap: () => _shareToPlatform(platform),
       child: Column(
@@ -214,7 +216,7 @@ class ShareDialogWidget extends StatelessWidget {
               color: Color(0xFF2C2C2C),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppColors.white, size: 20.sp),
+            child: FaIcon(icon, color: AppColors.white, size: 20.sp),
           ),
           SizedBox(height: 8.h),
           AppTextWidget(
