@@ -8,6 +8,7 @@ import 'package:ottapp/Constants/AppNetworkImage.dart';
 import 'package:get/get.dart';
 import 'package:ottapp/Router/RouterName.dart';
 import 'package:ottapp/Const/AppText.dart';
+import 'package:ottapp/Const/SectionTypes.dart';
 import 'package:ottapp/SharedPreferences/PrefKeys.dart';
 import 'package:ottapp/SharedPreferences/shared_preferences.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
@@ -86,8 +87,8 @@ class VideoGridItem extends StatelessWidget {
       onTap: () {
         if (UserPreference.getValue(key: PrefKeys.logInToken) == null) {
           Get.find<BaseController>().showLoginDialog();
-        } else if (layoutType == AppText.shorts_grid ||
-            layoutType == AppText.shorts_rail) {
+        } else if (layoutType == SectionTypes.shorts_grid ||
+            layoutType == SectionTypes.shorts_rail) {
           Get.toNamed(
             RoutesName.reelShortsScreen,
             arguments: {

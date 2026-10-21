@@ -36,6 +36,7 @@ class Data {
   String? platformRating;
   String? country;
   bool? isFree;
+  Access? access;
   bool? isFeatured;
   String? status;
   int? viewCount;
@@ -53,6 +54,7 @@ class Data {
   List<dynamic>? directors;
   List<Seasons>? seasons;
   bool? inWatchlist;
+  SponsorSlider? sponsorSlider;
   dynamic watchProgress;
   Meta? meta;
   Share? share;
@@ -74,6 +76,7 @@ class Data {
         this.platformRating,
         this.country,
         this.isFree,
+        this.access,
         this.isFeatured,
         this.status,
         this.viewCount,
@@ -112,6 +115,7 @@ class Data {
     platformRating = json['platform_rating'];
     country = json['country'];
     isFree = json['is_free'];
+    access = json['access'] != null ? Access.fromJson(json['access']) : null;
     isFeatured = json['is_featured'];
     status = json['status'];
     viewCount = json['view_count'];
@@ -147,6 +151,10 @@ class Data {
       });
     }
     inWatchlist = json['in_watchlist'];
+    sponsorSlider = json['sponsor_slider'] != null
+        ? SponsorSlider.fromJson(
+            Map<String, dynamic>.from(json['sponsor_slider'] as Map))
+        : null;
     watchProgress = json['watch_progress'];
     meta = json['meta'] != null ? Meta.fromJson(json['meta']) : null;
     share = json['share'] != null ? Share.fromJson(json['share']) : null;
@@ -170,6 +178,7 @@ class Data {
     data['platform_rating'] = platformRating;
     data['country'] = country;
     data['is_free'] = isFree;
+    if (access != null) data['access'] = access!.toJson();
     data['is_featured'] = isFeatured;
     data['status'] = status;
     data['view_count'] = viewCount;
@@ -326,4 +335,155 @@ class Share {
     data['image'] = image;
     return data;
   }
+}
+
+
+/// What the server decided this viewer may do with this title.
+///
+/// `offers` is the list of ways in: subscribe, rent, buy. The app draws a
+/// button per offer rather than assuming a subscription is the only route —
+/// a pay-per-view title has no subscribe option at all.
+/// The sponsor strip attached to this title, if one is.
+class SponsorSlider {
+  String? title;
+  List<SponsorItem> items = [];
+
+  SponsorSlider();
+
+  SponsorSlider.fromJson(Map<String, dynamic> json) {
+    title = json['title'];
+    final list = json['items'];
+    if (list is List) {
+      items = list
+          .whereType<Map>()
+          .map((e) => SponsorItem.fromJson(Map<String, dynamic>.from(e)))
+          .where((i) => i.image.isNotEmpty)
+          .toList();
+    }
+  }
+
+  bool get hasItems => items.isNotEmpty;
+}
+
+class SponsorItem {
+  int id = 0;
+  String image = '';
+  String? url;
+  String? altText;
+
+  SponsorItem();
+
+  SponsorItem.fromJson(Map<String, dynamic> json) {
+    id = (json['id'] as num?)?.toInt() ?? 0;
+    image = (json['image'] as String?) ?? '';
+    url = json['url'];
+    altText = json['alt_text'];
+  }
+}
+
+class Access {
+  String? type;
+  bool? canPlay;
+  String? mode;
+  String? reason;
+  List<Offer> offers = [];
+  Purchase? purchase;
+
+  Access({this.type, this.canPlay, this.mode, this.reason, this.purchase});
+
+  Access.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    canPlay = json['can_play'];
+    mode = json['mode'];
+    reason = json['reason'];
+    if (json['offers'] != null) {
+      offers = (json['offers'] as List)
+          .map((e) => Offer.fromJson(Map<String, dynamic>.from(e as Map)))
+          .toList();
+    }
+    purchase = json['purchase'] != null
+        ? Purchase.fromJson(Map<String, dynamic>.from(json['purchase'] as Map))
+        : null;
+  }
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'can_play': canPlay,
+        'mode': mode,
+        'reason': reason,
+        'offers': offers.map((e) => e.toJson()).toList(),
+        if (purchase != null) 'purchase': purchase!.toJson(),
+      };
+
+  bool get hasRentOrBuy => offers.any((o) => o.type == 'rent' || o.type == 'buy');
+  bool get hasSubscribe => offers.any((o) => o.type == 'subscribe');
+  List<Offer> get ppvOffers =>
+      offers.where((o) => o.type == 'rent' || o.type == 'buy').toList();
+}
+
+/// One way to unlock the title: subscribe, rent or buy.
+class Offer {
+  String? type;
+  String? price;
+  String? currency;
+  String? displayPrice;
+  int? watchHours;
+  int? startDays;
+  String? appleProductId;
+  String? googleProductId;
+
+  Offer({this.type, this.displayPrice});
+
+  Offer.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    price = json['price']?.toString();
+    currency = json['currency'];
+    displayPrice = json['display_price'];
+    watchHours = json['watch_hours'];
+    startDays = json['start_days'];
+    appleProductId = json['apple_product_id'];
+    googleProductId = json['google_product_id'];
+  }
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'price': price,
+        'currency': currency,
+        'display_price': displayPrice,
+        'watch_hours': watchHours,
+        'start_days': startDays,
+        'apple_product_id': appleProductId,
+        'google_product_id': googleProductId,
+      };
+
+  /// "Rent \$1.99" / "Buy \$4.99"
+  String get label =>
+      '${type == 'rent' ? 'Rent' : 'Buy'} ${displayPrice ?? ''}'.trim();
+}
+
+/// A rental or purchase this viewer already holds.
+class Purchase {
+  String? type;
+  String? startsAt;
+  String? startDeadline;
+  String? expiresAt;
+  int? secondsRemaining;
+
+  Purchase({this.type});
+
+  Purchase.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    startsAt = json['starts_at'];
+    startDeadline = json['start_deadline'];
+    expiresAt = json['expires_at'];
+    secondsRemaining = json['seconds_remaining'];
+  }
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'starts_at': startsAt,
+        'start_deadline': startDeadline,
+        'expires_at': expiresAt,
+        'seconds_remaining': secondsRemaining,
+      };
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class WatchHistoryRequest {
   int? contentId;
   int? episodeId;
@@ -19,7 +21,9 @@ class WatchHistoryRequest {
       'episode_id': episodeId,
       'watch_position': watchPosition,
       'duration_seconds': durationSeconds,
-      'device_type': deviceType ?? 'mobile',
+      // 'mobile' cannot tell iOS from Android, which is the split the
+      // admin panel reports on.
+      'device_type': deviceType ?? (Platform.isIOS ? 'ios' : 'android'),
     };
   }
 }

@@ -8,6 +8,7 @@ import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Constants/AppNetworkImage.dart';
 import 'package:ottapp/Widgets/VerticalRailWidget.dart';
 import 'package:ottapp/Models/HomeModel.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -65,7 +66,7 @@ class SearchScreen extends StatelessWidget {
                     onSubmitted: (v) => controller.performSearch(),
                     style: TextStyle(color: AppColors.white, fontSize: 15.sp),
                     decoration: InputDecoration(
-                      hintText: "Search movies, series, shorts...",
+                      hintText: AppTranslations.resolve('search.hint_full'),
                       hintStyle: TextStyle(color: AppColors.whiteOpacity30, fontSize: 13.sp),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
@@ -146,12 +147,12 @@ class SearchScreen extends StatelessWidget {
                 );
               });
             } else {
-              // The "Clear Filter" button at the end
+              // The AppTranslations.resolve('search.clear_filter') button at the end
               return Center(
                 child: TextButton(
                   onPressed: controller.clearFilters,
                   child: AppTextWidget(
-                    text: "Clear Filter",
+                    text: AppTranslations.resolve('search.clear_filter'),
                     color: AppColors.appColors,
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
@@ -172,7 +173,7 @@ class SearchScreen extends StatelessWidget {
         Padding(
           padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
           child: AppTextWidget(
-            text: "Browse by Genre",
+            text: AppTranslations.resolve('search.browse_genre'),
             color: AppColors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -281,7 +282,7 @@ class SearchScreen extends StatelessWidget {
             if (controller.searchResults.isEmpty) {
               return Center(
                 child: AppTextWidget(
-                  text: "No results found",
+                  text: AppTranslations.resolve('search.no_results'),
                   color: AppColors.white54,
                   fontSize: 16,
                 ),
@@ -305,7 +306,7 @@ class SearchScreen extends StatelessWidget {
                 return
                   VerticalRailItem(
                   item: item,
-                  section: Sections(slug: 'search_results', title: 'Search Results'),
+                  section: Sections(slug: 'search_results', title: AppTranslations.resolve('search.results')),
                   index: index,
                   fit: BoxFit.contain,
                   width: double.infinity,

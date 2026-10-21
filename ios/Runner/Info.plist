@@ -78,5 +78,14 @@
 		<string>fb</string>
 		<string>twitter</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Lets debug builds reach a Laravel server on this Mac over http.
+		     NSAllowsLocalNetworking covers localhost and the local network only;
+		     it does not weaken security for internet traffic and needs no
+		     justification at App Store review. -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

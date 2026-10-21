@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Models/ShortDramaModel.dart';
 import 'package:ottapp/Const/AppColors.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 /// Episode Selection Bottom Sheet with dynamic episodes, accurate lock states, and responsive tabs
 class EpisodeSelectionBottomSheet extends StatefulWidget {
@@ -412,8 +413,8 @@ class _EpisodeSelectionBottomSheetState
                     color: AppColors.appColors,
                     borderRadius: BorderRadius.circular(4.r),
                   ),
-                  child: const AppTextWidget(
-                    text: "FREE",
+                  child: AppTextWidget(
+                    text: AppTranslations.resolve('shorts.free'),
                     fontSize: 7.5,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,

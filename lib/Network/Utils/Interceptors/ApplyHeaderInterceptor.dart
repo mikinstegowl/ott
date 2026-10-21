@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'package:chopper/chopper.dart';
 import 'package:ottapp/SharedPreferences/PrefKeys.dart';
 import 'package:ottapp/SharedPreferences/shared_preferences.dart';
+import 'package:ottapp/Localization/LanguageService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:get/get.dart' as g;
@@ -72,6 +74,15 @@ class ApplyHeaderInterceptor implements Interceptor {
   //   return request; // Return the original request if no token is applied
   // }
 
+  /// Which platform this request came from.
+  ///
+  /// The server records this against views and ad events, and it is the only
+  /// way the admin panel can tell iOS traffic from Android. Sent on every
+  /// request rather than per endpoint, because the ones that matter for
+  /// reporting are easy to miss one at a time — content views were filed as
+  /// web for every app viewer until this was added.
+  static String get _platform => Platform.isIOS ? 'ios' : 'android';
+
   @override
   FutureOr<Response<BodyType>> intercept<BodyType>(Chain<BodyType> chain) async {
     final path = chain.request.url.path;
@@ -85,8 +96,15 @@ class ApplyHeaderInterceptor implements Interceptor {
         (UserPreference.getValue(key: PrefKeys.logInToken) as String?) ??
             prefs.getString(PrefKeys.logInToken);
 
+    // Signed out viewers still watch things, so the platform goes on the
+    // request either way.
     if (token == null || token.isEmpty) {
-      return chain.proceed(chain.request);
+      return chain.proceed(
+        applyHeaders(chain.request, {
+          'X-Device-Type': _platform,
+          'Accept-Language': LanguageService.header,
+        }),
+      );
     }
 
     log('Applying headers', name: 'ApplyHeaderInterceptor');
@@ -94,6 +112,10 @@ class ApplyHeaderInterceptor implements Interceptor {
       applyHeaders(chain.request, {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
+        'X-Device-Type': _platform,
+        // Titles, descriptions, plan names and error messages are translated
+        // on the server, so the language travels with every request.
+        'Accept-Language': LanguageService.header,
       }),
     );
   }

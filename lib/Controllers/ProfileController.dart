@@ -4,6 +4,7 @@ import 'package:ottapp/ChopperClientService/AuthChopperService.dart';
 import 'package:ottapp/Models/ProfileModel.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
 import 'package:ottapp/Constants/CustomSnackBar.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class ProfileController extends BaseController {
   final AuthChopperService authChopperService;
@@ -38,7 +39,7 @@ class ProfileController extends BaseController {
         _populateControllers();
       }
     } catch (e) {
-      Utility.showSnackBar("Failed to load profile", isError: true, response: e);
+      Utility.showSnackBar(AppTranslations.resolve('profile.load_failed'), isError: true, response: e);
     } finally {
       showLoader(false);
     }
@@ -57,12 +58,12 @@ class ProfileController extends BaseController {
   Future<void> updateProfile() async {
     if (newPasswordController.text.isNotEmpty && 
         newPasswordController.text != confirmPasswordController.text) {
-      Utility.showSnackBar("Passwords do not match", isError: true);
+      Utility.showSnackBar(AppTranslations.resolve('auth.passwords_no_match'), isError: true);
       return;
     }
 
     if (newPasswordController.text.isNotEmpty && currentPasswordController.text.isEmpty) {
-      Utility.showSnackBar("Current password is required to change password", isError: true);
+      Utility.showSnackBar(AppTranslations.resolve('profile.current_password_required'), isError: true);
       return;
     }
 
@@ -80,7 +81,7 @@ class ProfileController extends BaseController {
       final profileResponse = await authChopperService.updateProfileAPI(param: profileParams);
       if (!profileResponse.isSuccessful) {
         isError = true;
-        Utility.showSnackBar("Failed to update profile", isError: true, response: profileResponse);
+        Utility.showSnackBar(AppTranslations.resolve('profile.update_failed'), isError: true, response: profileResponse);
       }
 
       if (newPasswordController.text.isNotEmpty && !isError) {
@@ -96,16 +97,16 @@ class ProfileController extends BaseController {
           confirmPasswordController.clear();
         } else {
           isError = true;
-          Utility.showSnackBar("Failed to change password", isError: true, response: passResponse);
+          Utility.showSnackBar(AppTranslations.resolve('profile.password_change_failed'), isError: true, response: passResponse);
         }
       }
 
       if (!isError) {
-        Utility.showSnackBar("Profile updated successfully");
+        Utility.showSnackBar(AppTranslations.resolve('profile.updated'));
         fetchProfileData();
       }
     } catch (e) {
-      Utility.showSnackBar("An error occurred", isError: true, response: e);
+      Utility.showSnackBar(AppTranslations.resolve('common.error_occurred'), isError: true, response: e);
     } finally {
       showLoader(false);
     }

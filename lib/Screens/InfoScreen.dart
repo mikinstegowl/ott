@@ -9,6 +9,7 @@ import 'package:ottapp/Router/RouterName.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Widgets/ContentDetails/ContentDetailView.dart';
 import 'package:ottapp/Models/InfoModel.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class InfoScreen extends GetView<InfoController> {
   const InfoScreen({super.key});
@@ -37,7 +38,7 @@ class InfoScreen extends GetView<InfoController> {
         if (data == null) {
           return Center(
             child: AppTextWidget(
-              text: "Content not found",
+              text: AppTranslations.resolve('content.not_found'),
               color: AppColors.white,
             ),
           );
@@ -56,6 +57,9 @@ class InfoScreen extends GetView<InfoController> {
           onShare: controller.shareContent,
           isLoadingWatchlist: controller.isTogglingWatchlist.value,
           isPlayLoading: controller.isPlayingContent.value,
+          offers: controller.ppvOffers,
+          onOffer: controller.offerAction,
+          ownershipLabel: controller.ownershipLabel,
           extraSection: Column(
             children: [
               _buildEpisodesSection(),
@@ -83,7 +87,7 @@ class InfoScreen extends GetView<InfoController> {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 15.h),
             child: AppTextWidget(
-              text: "Episodes",
+              text: AppTranslations.resolve('content.episodes'),
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.white,
@@ -98,7 +102,7 @@ class InfoScreen extends GetView<InfoController> {
               padding: EdgeInsets.symmetric(vertical: 20.h),
               child: Center(
                 child: AppTextWidget(
-                  text: "No episodes available",
+                  text: AppTranslations.resolve('content.no_episodes'),
                   color: AppColors.white   .withAlpha(127),
                 ),
               ),
@@ -157,7 +161,7 @@ class InfoScreen extends GetView<InfoController> {
                             ),
                             SizedBox(height: 10.h),
                             AppTextWidget(
-                              text: "E${episode.episodeNumber} : ${episode.title ?? ''}",
+                              text: '${AppTranslations.resolve('content.episode_prefix').replaceAll('@number', '${episode.episodeNumber}')} : ${episode.title ?? ''}',
                               color: AppColors.white,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
@@ -202,7 +206,7 @@ class InfoScreen extends GetView<InfoController> {
                 ),
                 child: Center(
                   child: AppTextWidget(
-                    text: season.title ?? "Season ${season.seasonNumber}",
+                    text: season.title ?? AppTranslations.resolve('content.season').replaceAll('@number', '${season.seasonNumber}'),
                     color: AppColors.white,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
@@ -230,7 +234,7 @@ class InfoScreen extends GetView<InfoController> {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 20.h),
             child: AppTextWidget(
-              text: "Recommended",
+              text: AppTranslations.resolve('content.recommended'),
               fontSize: 22.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.white,

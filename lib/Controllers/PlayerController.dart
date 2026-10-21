@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ottapp/ChopperClientService/HomeChopperService.dart';
+import 'package:ottapp/Controllers/AdBreakController.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
 import 'package:ottapp/Models/InfoModel.dart';
 import 'package:ottapp/Widgets/InAppPurchase/InAppPurchaseBottomSheet.dart';
@@ -10,6 +11,10 @@ import 'package:chewie/chewie.dart';
 import 'dart:async';
 
 class PlayerController extends BaseController {
+  /// Manual ad breaks. Empty for anyone with an ad-free entitlement, in which
+  /// case it never touches playback.
+  final AdBreakController ads = Get.put(AdBreakController(), permanent: false);
+
   final HomeChopperService homeChopperService;
   PlayerController({required this.homeChopperService});
 
@@ -166,6 +171,9 @@ class PlayerController extends BaseController {
       }
     }
 
+    // Ad breaks come with the play response; empty for ad-free viewers.
+    ads.load(data?.ads, resumeSeconds: startSeconds);
+
     // Start playback based on source
     if (videoSource.value == "youtube") {
       if (playUrl != null) {
@@ -274,6 +282,11 @@ class PlayerController extends BaseController {
       isInitialized.value = true;
       isBuffering.value = false;
 
+      // Ads attach to the content player and own the first play, so a
+      // pre-roll runs before the film starts.
+      ads.attach(videoPlayerController!);
+      await ads.begin();
+
       if (autoRotate) _setFullScreen();
       resetHideTimer();
     } catch (e) {
@@ -289,6 +302,7 @@ class PlayerController extends BaseController {
   }
 
   Future<void> syncWatchHistory() async {
+    if (ads.inAd.value) return;
     if ((contentId == null && episodeId == null) || totalDuration.value.inSeconds < 1) return;
     try {
       final body = {
@@ -304,6 +318,7 @@ class PlayerController extends BaseController {
 
   // MARK: - User Interface Interactions
   void togglePlay() {
+    if (ads.inAd.value) return;
     resetHideTimer();
     if (videoSource.value == 'youtube') {
       isPlaying.value ? youtubeController?.pause() : youtubeController?.play();
@@ -313,6 +328,8 @@ class PlayerController extends BaseController {
   }
 
   void seekTo(Duration pos) {
+    // No scrubbing while an ad is on screen.
+    if (ads.inAd.value) return;
     videoSource.value == 'youtube' ? youtubeController?.seekTo(pos) : videoPlayerController?.seekTo(pos);
   }
 

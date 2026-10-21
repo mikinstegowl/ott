@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ottapp/Const/AppColors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:ottapp/Const/AppText.dart';
+import 'package:ottapp/Const/SectionTypes.dart';
 import 'package:ottapp/Constants/AppLoader.dart';
 import 'package:ottapp/Controllers/HomeController.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
@@ -19,6 +19,7 @@ import 'package:ottapp/Widgets/SponsorRailWidget.dart';
 
 import 'package:ottapp/Widgets/SectionSkeleton.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -138,8 +139,8 @@ class HomeScreen extends GetView<HomeController> {
               //     color: AppColors.white54,
               //     size: 20.sp,
               //   ),
-              //   title: const AppTextWidget(
-              //     text: "Reel Shorts",
+              //   title: AppTextWidget(
+              //     text: AppTranslations.resolve('home.reel_shorts'),
               //     color: AppColors.white,
               //     fontSize: 14,
               //     fontWeight: FontWeight.normal,
@@ -156,8 +157,8 @@ class HomeScreen extends GetView<HomeController> {
                   color: AppColors.white54,
                   size: 20.sp,
                 ),
-                title: const AppTextWidget(
-                  text: "My Watchlist",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('watchlist.title'),
                   color: AppColors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
@@ -173,8 +174,8 @@ class HomeScreen extends GetView<HomeController> {
                   color: AppColors.white54,
                   size: 20.sp,
                 ),
-                title: const AppTextWidget(
-                  text: "FAQ",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('home.faq'),
                   color: AppColors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
@@ -193,8 +194,8 @@ class HomeScreen extends GetView<HomeController> {
                   color: AppColors.white54,
                   size: 20.sp,
                 ),
-                title: const AppTextWidget(
-                  text: "Support",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('home.support'),
                   color: AppColors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
@@ -206,8 +207,8 @@ class HomeScreen extends GetView<HomeController> {
               ),
               ListTile(
                 leading: const Icon(Icons.logout, color: AppColors.red),
-                title: const AppTextWidget(
-                  text: "Logout",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('profile.log_out'),
                   color: AppColors.red,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -219,8 +220,8 @@ class HomeScreen extends GetView<HomeController> {
                   Icons.delete_outline_rounded,
                   color: AppColors.red,
                 ),
-                title: const AppTextWidget(
-                  text: "Delete Account",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('profile.delete_account'),
                   color: AppColors.red,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -254,30 +255,30 @@ class HomeScreen extends GetView<HomeController> {
                   final section = sections[index];
                   Widget sectionWidget;
                   switch (section.layoutType) {
-                    case AppText.hero_banner:
+                    case SectionTypes.hero_banner:
                       sectionWidget = HeroBannerWidget(
                         section: section,
                         onLoadMore: () => controller.loadMoreItems(section),
                       );
                       break;
-                    case AppText.horizontal_rail:
-                    case AppText.landscape_rail:
+                    case SectionTypes.horizontal_rail:
+                    case SectionTypes.landscape_rail:
                       sectionWidget = HorizontalRailWidget(
                         section: section,
                         onLoadMore: () => controller.loadMoreItems(section),
                       );
                       break;
-                    case AppText.shorts_rail:
-                    case AppText.top_10_rail:
-                    case AppText.vertical_rail:
-                    case AppText.banner_card:
-                    case AppText.portrait_rail:
+                    case SectionTypes.shorts_rail:
+                    case SectionTypes.top_10_rail:
+                    case SectionTypes.vertical_rail:
+                    case SectionTypes.banner_card:
+                    case SectionTypes.portrait_rail:
                       sectionWidget = VerticalRailWidget(
                         section: section,
                         onLoadMore: () => controller.loadMoreItems(section),
                       );
                       break;
-                    case AppText.genre_tabs:
+                    case SectionTypes.genre_tabs:
                       sectionWidget = GenreRailWidget(
                         section: section,
                         data: controller.getAllGenreModel.value?.data ?? [],
@@ -285,17 +286,17 @@ class HomeScreen extends GetView<HomeController> {
                       );
                       break;
 
-                    case AppText.shorts_grid:
-                    case AppText.vertical_grid:
+                    case SectionTypes.shorts_grid:
+                    case SectionTypes.vertical_grid:
                       sectionWidget = VideoGridWidget(
                         section: section,
                         onLoadMore: () => controller.loadMoreItems(section),
                       );
                       break;
-                    case AppText.single_spotlight:
+                    case SectionTypes.single_spotlight:
                       sectionWidget = SingleSpotlightWidget(section: section);
                       break;
-                    case AppText.sponsor_rail:
+                    case SectionTypes.sponsor_rail:
                       sectionWidget = SponsorRailWidget(section: section);
                       break;
 

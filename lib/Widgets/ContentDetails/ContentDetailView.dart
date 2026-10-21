@@ -9,6 +9,7 @@ import 'package:ottapp/Widgets/ContentDetails/ContentMetadata.dart';
 import 'package:ottapp/Widgets/ContentDetails/ContentActionButtons.dart';
 
 import 'package:ottapp/Constants/AppUtils.dart';
+import 'package:ottapp/Widgets/ContentDetails/SponsorRail.dart';
 
 class ContentDetailView extends StatelessWidget {
   final Data? data;
@@ -25,6 +26,17 @@ class ContentDetailView extends StatelessWidget {
   final bool isLoadingWatchlist;
   final bool isPlayLoading;
 
+  /// Rent / buy buttons for a pay-per-view title. Empty when the title is
+  /// free, subscription-only, or already owned — the server decides, and the
+  /// app draws whatever it is handed.
+  final List<Offer> offers;
+
+  /// Called with the chosen offer ('rent' or 'buy').
+  final void Function(Offer offer)? onOffer;
+
+  /// "Rented · 36 h left" when this viewer already holds the title.
+  final String? ownershipLabel;
+
   const ContentDetailView({
     super.key,
     this.data,
@@ -40,6 +52,9 @@ class ContentDetailView extends StatelessWidget {
     this.extraSection,
     this.isLoadingWatchlist = false,
     this.isPlayLoading = false,
+    this.offers = const [],
+    this.onOffer,
+    this.ownershipLabel,
   });
 
   @override
@@ -94,7 +109,31 @@ class ContentDetailView extends StatelessWidget {
                   onShare: onShare,
                   isLoading: isLoadingWatchlist,
                   isPlayLoading: isPlayLoading,
+                  offers: offers,
+                  onOffer: onOffer,
                 ),
+
+                // Sponsors sit directly under the actions, where the client
+                // asked for them: visible without scrolling, but below the
+                // controls someone came to the page to use.
+                SponsorRail(slider: data?.sponsorSlider),
+                if (ownershipLabel != null)
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.h),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, size: 16.sp, color: const Color(0xFF7EE2A8)),
+                        SizedBox(width: 6.w),
+                        AppTextWidget(
+                          text: ownershipLabel!,
+                          color: const Color(0xFF7EE2A8),
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ],
+                    ),
+                  ),
+
                 if (extraSection != null) extraSection!,
               ],
             ),

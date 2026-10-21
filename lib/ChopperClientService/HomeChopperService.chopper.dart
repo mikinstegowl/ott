@@ -19,6 +19,55 @@ final class _$HomeChopperService extends HomeChopperService {
   final Type definitionType = HomeChopperService;
 
   @override
+  Future<Response<dynamic>> appProducts(String platform) {
+    final Uri $url = Uri.parse('app/products');
+    final Map<String, dynamic> $params = <String, dynamic>{
+      'platform': platform,
+    };
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> verifyAppPurchase(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('app/purchase/verify');
+    final $body = body;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> sendAdEvents(
+    Map<String, dynamic> body,
+    String deviceType,
+  ) {
+    final Uri $url = Uri.parse('ads/events');
+    final Map<String, String> $headers = {'X-Device-Type': deviceType};
+    final $body = body;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+      headers: $headers,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> restoreAppPurchases(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('app/purchase/restore');
+    final $body = body;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<WatchHistoryResponse>> syncWatchHistory(
     Map<String, dynamic> body,
   ) {
@@ -167,6 +216,13 @@ final class _$HomeChopperService extends HomeChopperService {
       parameters: $params,
     );
     return client.send<List<MenuModel>, MenuModel>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getSplashSlides() {
+    final Uri $url = Uri.parse('app/splash');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
   }
 
   @override

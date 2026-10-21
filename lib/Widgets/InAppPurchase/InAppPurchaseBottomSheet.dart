@@ -7,17 +7,92 @@ import 'package:ottapp/Constants/InAppPurchaseConstants.dart';
 import 'package:ottapp/Controllers/InAppPurchaseController.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class InAppPurchaseBottomSheet extends StatelessWidget {
-  const InAppPurchaseBottomSheet({super.key});
+  const InAppPurchaseBottomSheet({super.key, this.offerProductIds, this.title});
 
-  static void show(BuildContext context) {
+  /// Pay-per-view product ids for ONE title. Null means this is the
+  /// subscription sheet, which must only ever list subscription plans —
+  /// listing rentals and event tickets there offers something the viewer
+  /// cannot act on from this screen.
+  final List<String>? offerProductIds;
+
+  /// Heading override, e.g. the film's name on a rent/buy sheet.
+  final String? title;
+
+  /// The live sheet's context, so the purchase controller can dismiss it
+  /// once the server confirms. GetX cannot: this is a plain
+  /// showModalBottomSheet, which `Get.isBottomSheetOpen` never sees.
+  static BuildContext? _sheetContext;
+
+  static void show(
+    BuildContext context, {
+    List<String>? offerProductIds,
+    String? title,
+    String? preselect,
+  }) {
+    // Someone who tapped Rent must not find Buy selected when the sheet opens:
+    // the next tap is Continue, and buying costs several times what renting
+    // does.
+    if (preselect != null && preselect.isNotEmpty) {
+      Get.put(InAppPurchaseController()).selectedProductId.value = preselect;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const InAppPurchaseBottomSheet(),
-    );
+      builder: (sheetContext) {
+        _sheetContext = sheetContext;
+        return InAppPurchaseBottomSheet(
+          offerProductIds: offerProductIds,
+          title: title,
+        );
+      },
+    ).whenComplete(() => _sheetContext = null);
+  }
+
+  /// Dismiss the paywall. Called after a purchase is verified, so the sheet
+  /// does not sit over a title the viewer has just paid for.
+  static void close() {
+    final ctx = _sheetContext;
+    _sheetContext = null;
+
+    if (ctx != null && ctx.mounted && Navigator.of(ctx).canPop()) {
+      Navigator.of(ctx).pop();
+    }
+  }
+
+  /// The heading, which has to match what is being sold. "Upgrade to VIP —
+  /// unlimited episodes" is wrong above a 48-hour rental of one film.
+  String get _heading => offerProductIds == null
+      ? AppTranslations.resolve('paywall.choose_plan')
+      : (title == null || title!.isEmpty ? AppTranslations.resolve('paywall.rent_or_buy') : AppTranslations.resolve('paywall.rent_or_buy_title').replaceAll('@title', title!));
+
+  String get _subheading => offerProductIds == null
+      ? AppTranslations.resolve('paywall.full_catalogue')
+      : AppTranslations.resolve('paywall.one_payment');
+
+  /// What this sheet is allowed to show.
+  List<ProductDetails> _visibleProducts(InAppPurchaseController c) =>
+      offerProductIds == null
+          ? c.subscriptionProducts
+          : c.ppvProductsFor(offerProductIds!);
+
+  /// The product Continue will buy.
+  ///
+  /// The controller's selection is global, so it can be left pointing at a
+  /// product this sheet does not show — a plan while a rent sheet is open,
+  /// or the reverse. Resolving against the visible list keeps the highlight
+  /// and the button agreeing with each other, and means the first row is
+  /// always buyable without the viewer having to tap it first.
+  ProductDetails? _selected(InAppPurchaseController c) {
+    final visible = _visibleProducts(c);
+    if (visible.isEmpty) return null;
+
+    return visible.firstWhereOrNull((p) => p.id == c.selectedProductId.value) ??
+        visible.first;
   }
 
   @override
@@ -58,14 +133,14 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AppTextWidget(
-                          text: 'Upgrade to VIP',
+                          text: _heading,
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.white,
                         ),
                         SizedBox(height: 4.h),
                         AppTextWidget(
-                          text: 'Unlock unlimited episodes & ad-free streaming',
+                          text: _subheading,
                           fontSize: 13.sp,
                           color: AppColors.lightWhite70,
                         ),
@@ -88,7 +163,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                     child: CircularProgressIndicator(color: AppColors.appColors),
                   ),
                 )
-              else if (controller.products.isEmpty)
+              else if (_visibleProducts(controller).isEmpty)
                 Container(
                   padding: EdgeInsets.all(16.r),
                   margin: EdgeInsets.symmetric(vertical: 16.h),
@@ -101,14 +176,14 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                       Icon(Icons.storefront_outlined, size: 40.sp, color: Colors.white54),
                       SizedBox(height: 8.h),
                       AppTextWidget(
-                        text: 'No products found',
+                        text: AppTranslations.resolve('paywall.no_products'),
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
                       SizedBox(height: 4.h),
                       AppTextWidget(
-                        text: 'Please check your Store setup or try again later.',
+                        text: AppTranslations.resolve('paywall.check_store'),
                         fontSize: 12.sp,
                         color: Colors.white54,
                         textAlign: TextAlign.center,
@@ -117,17 +192,17 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                       TextButton.icon(
                         onPressed: controller.refreshProducts,
                         icon: const Icon(Icons.refresh, color: AppColors.appColors),
-                        label: const Text(
-                          'Retry',
-                          style: TextStyle(color: AppColors.appColors),
+                        label: Text(
+                          AppTranslations.resolve('common.retry'),
+                          style: const TextStyle(color: AppColors.appColors),
                         ),
                       )
                     ],
                   ),
                 )
               else
-                ...controller.products.map((product) {
-                  final isSelected = controller.selectedProductId.value == product.id;
+                ..._visibleProducts(controller).map((product) {
+                  final isSelected = _selected(controller)?.id == product.id;
                   return _buildProductCard(product, isSelected, () {
                     controller.selectedProductId.value = product.id;
                   });
@@ -145,12 +220,11 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
-                onPressed: controller.isPurchasing.value || controller.products.isEmpty
+                onPressed: controller.isPurchasing.value ||
+                        _visibleProducts(controller).isEmpty
                     ? null
                     : () {
-                        final selected = controller.products.firstWhereOrNull(
-                          (p) => p.id == controller.selectedProductId.value,
-                        );
+                        final selected = _selected(controller);
                         if (selected != null) {
                           controller.purchase(selected);
                         }
@@ -165,7 +239,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                         ),
                       )
                     : Text(
-                        'Continue',
+                        AppTranslations.resolve('common.continue'),
                         style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                       ),
               ),
@@ -177,7 +251,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                 child: TextButton(
                   onPressed: controller.isPurchasing.value ? null : controller.restore,
                   child: Text(
-                    'Restore Purchases',
+                    AppTranslations.resolve('paywall.restore'),
                     style: TextStyle(
                       color: AppColors.lightWhite70,
                       fontSize: 13.sp,
@@ -191,9 +265,9 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildLegalLink('Terms of Use', InAppPurchaseConstants.termsOfServiceUrl),
+                  _buildLegalLink(AppTranslations.resolve('paywall.terms'), InAppPurchaseConstants.termsOfServiceUrl),
                   Text(' • ', style: TextStyle(color: Colors.white38, fontSize: 12.sp)),
-                  _buildLegalLink('Privacy Policy', InAppPurchaseConstants.privacyPolicyUrl),
+                  _buildLegalLink(AppTranslations.resolve('paywall.privacy'), InAppPurchaseConstants.privacyPolicyUrl),
                 ],
               ),
             ],

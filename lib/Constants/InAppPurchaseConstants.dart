@@ -1,7 +1,12 @@
-// In-App Purchase Product Identifiers & Configurations
-// Make sure these IDs match EXACTLY what is created in:
-// 1. Google Play Console > Monetize > Products > In-app products / Subscriptions
-// 2. App Store Connect > Monetization > In-App Purchases / Subscriptions
+// In-App Purchase product identifiers.
+//
+// These are now only a FALLBACK. The live ids come from the server
+// (GET /app/products) and are managed in the admin panel, so adding a plan or
+// renaming a store product needs no app release and no store review.
+//
+// They still have to match exactly what exists in:
+// 1. Google Play Console > Monetize > Products > Subscriptions
+// 2. App Store Connect > your app > Subscriptions
 
 class InAppPurchaseConstants {
   // Subscription Products (Auto-renewable)
@@ -36,8 +41,18 @@ class InAppPurchaseConstants {
     yearlySubscriptionId,
   };
 
-  // Legal Links (MANDATORY for Apple App Store Subscriptions approval)
-  static const String termsOfServiceUrl = 'https://trebolplus.com/terms';
-  static const String appleStandardEulaUrl = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
-  static const String privacyPolicyUrl = 'https://trebolplus.com/privacy';
+  // Legal links. MANDATORY for App Store subscription approval — Apple
+  // rejects a subscription screen without working Terms and Privacy links.
+  //
+  // These are the fallback. The server returns the live ones in
+  // /app/products under 'legal', and those are preferred: the paths here
+  // must match the pages that actually exist, and /terms and /privacy are
+  // not among them — the site answers every path, so a wrong one shows a
+  // "page not found" screen rather than failing outright.
+  static const String termsOfServiceUrl = 'https://trebolplus.com/terms-of-use';
+  static const String privacyPolicyUrl = 'https://trebolplus.com/privacy-policy';
+
+  // Apple's own standard EULA, offered when a bespoke one is not supplied.
+  static const String appleStandardEulaUrl =
+      'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 }

@@ -1,0 +1,180 @@
+{
+  "identifier": "C9845D34-68B7-43F9-A09F-BB965BE5F23A",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "1.99",
+      "familyShareable": false,
+      "internalID": "55251750-A373-49E3-82E3-937CA7DFD4C4",
+      "localizations": [
+        {
+          "description": "Watch this title for 48 hours",
+          "displayName": "Rent \u2014 48 Hours",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.trebolplus.ppv.rent.standard",
+      "referenceName": "Rent Standard",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "2.99",
+      "familyShareable": false,
+      "internalID": "21B22EDB-6601-4815-9B10-A939F30825BE",
+      "localizations": [
+        {
+          "description": "New release, 48 hours to watch",
+          "displayName": "Rent Premiere \u2014 48 Hours",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.trebolplus.ppv.rent.premiere",
+      "referenceName": "Rent Premiere",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "3.99",
+      "familyShareable": false,
+      "internalID": "E9F79220-11E6-41B2-B861-DD78E3D2F7A3",
+      "localizations": [
+        {
+          "description": "All episodes for 30 days",
+          "displayName": "Series Pass \u2014 30 Days",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.trebolplus.ppv.series.pass",
+      "referenceName": "Series Pass",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "4.99",
+      "familyShareable": false,
+      "internalID": "803FCD6A-3DF3-438E-AF6B-75D0C08B03A5",
+      "localizations": [
+        {
+          "description": "Watch live plus replay for 30 days",
+          "displayName": "Live Event Ticket",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.trebolplus.ppv.live.ticket",
+      "referenceName": "Live Event Ticket",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "4.99",
+      "familyShareable": false,
+      "internalID": "448A4181-A84C-47AF-A7B1-961A35A44080",
+      "localizations": [
+        {
+          "description": "Own this title, watch any time",
+          "displayName": "Buy \u2014 Keep Forever",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.trebolplus.ppv.buy.standard",
+      "referenceName": "Buy Standard",
+      "type": "Consumable"
+    },
+    {
+      "displayPrice": "7.99",
+      "familyShareable": false,
+      "internalID": "599198F8-9CD2-4032-AC35-6F5FCE78F73C",
+      "localizations": [
+        {
+          "description": "Own this new release",
+          "displayName": "Buy Premiere \u2014 Keep Forever",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.trebolplus.ppv.buy.premiere",
+      "referenceName": "Buy Premiere",
+      "type": "Consumable"
+    }
+  ],
+  "settings": {
+    "_applicationInternalID": "6768669892",
+    "_developerTeamID": "5G2U7C4QVB",
+    "_lastSynchronizedDate": 0
+  },
+  "subscriptionGroups": [
+    {
+      "id": "21425",
+      "localizations": [],
+      "name": "TrebolPlus Membership",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "2.49",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "37A8F24D-4CA7-49EC-AC49-9581003FF593",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Full catalogue with ads, 720p, 1 screen",
+              "displayName": "Basic",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.trebolplus.basic.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Basic Monthly",
+          "subscriptionGroupID": "21425",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "4.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "057C0D1B-488E-4B81-B7DA-7ADAAD6EBF0D",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Ad-free, 1080p, 2 screens, downloads",
+              "displayName": "Premium",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.trebolplus.premium.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Premium Monthly",
+          "subscriptionGroupID": "21425",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "44.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "76479F97-9F0B-4B5F-AD86-1A7A8EA59276",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Ad-free for a year \u2014 save 25%",
+              "displayName": "Premium Annual",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.trebolplus.premium.yearly",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Premium Annual",
+          "subscriptionGroupID": "21425",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 4,
+    "minor": 0
+  }
+}

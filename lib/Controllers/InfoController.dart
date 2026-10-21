@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:ottapp/ChopperClientService/HomeChopperService.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
+import 'package:ottapp/Controllers/InAppPurchaseController.dart';
 import 'package:ottapp/Models/InfoModel.dart';
 import 'package:ottapp/Models/MagicLinkModel.dart';
 import 'package:ottapp/Models/RecommendedModel.dart';
@@ -12,6 +13,7 @@ import 'package:ottapp/Constants/CustomSnackBar.dart';
 import 'package:ottapp/Router/RouterName.dart';
 import 'package:ottapp/Constants/ShareHelper.dart';
 import 'package:ottapp/Widgets/InAppPurchase/InAppPurchaseBottomSheet.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class InfoController extends BaseController {
   final HomeChopperService homeChopperService;
@@ -40,6 +42,12 @@ class InfoController extends BaseController {
     // Listen to global subscription changes to update UI
     ever(BaseController.isSubscribed, (_) => _updateWatchNowText());
 
+    // A purchase made from this screen changes what the viewer may do, so
+    // reload the server's decision instead of leaving the old buttons up.
+    ever(Get.put(InAppPurchaseController()).grantVersion, (_) {
+      if (contentUuid != null) fetchContentDetail(contentUuid!);
+    });
+
     if (contentUuid != null) {
       fetchContentDetail(contentUuid!);
       fetchRecommendedContent(contentUuid!);
@@ -48,12 +56,95 @@ class InfoController extends BaseController {
     }
   }
 
+  /// The server's decision for this viewer: what they may do and what they
+  /// can buy. Falls back to the old is_free logic when an older API response
+  /// carries no access block.
+  Access? get access => contentData.value?.data?.access;
+
+  /// Rent / buy buttons to draw. Empty once the viewer can already play.
+  List<Offer> get ppvOffers =>
+      (access?.canPlay ?? false) ? const [] : (access?.ppvOffers ?? const []);
+
+  /// "Purchased" / "Rented · 36 h left", or null when they own nothing.
+  String? get ownershipLabel {
+    final p = access?.purchase;
+    if (p == null || access?.canPlay != true || access?.mode != 'purchase') {
+      return null;
+    }
+    if (p.type == 'buy') return 'Purchased';
+    if (p.startsAt == null) return 'Rented — not started yet';
+
+    // Hours alone reads as "0h left" for the whole final hour, which is the
+    // hour someone is most likely to be looking at this.
+    final seconds = p.secondsRemaining ?? 0;
+
+    if (seconds <= 0) return 'Rental ended';
+
+    if (seconds < 3600) {
+      final minutes = (seconds / 60).ceil();
+      return 'Rented · ${minutes}m left';
+    }
+
+    return 'Rented · ${(seconds / 3600).floor()}h left';
+  }
+
   void _updateWatchNowText() {
+    final a = access;
+
+    if (a != null) {
+      if (a.canPlay == true) {
+        watchNowText.value = "Watch Now";
+      } else if (a.hasSubscribe) {
+        watchNowText.value = "Subscribe";
+      } else {
+        // Pay-per-view only — subscribing would not unlock it, so the primary
+        // button must not promise that.
+        watchNowText.value = "Rent or Buy";
+      }
+      return;
+    }
+
     if (contentData.value?.data?.isFree == false &&
         !BaseController.isSubscribed.value) {
-      watchNowText.value = "Subscribe To Watch";
+      watchNowText.value = "Subscribe";
     } else {
       watchNowText.value = "Watch Now";
+    }
+  }
+
+  /// A rent or buy button was tapped: open the paywall with ONLY that title's
+  /// tickets, and remember which title the purchase is for so the server can
+  /// attach it to the right content.
+  void offerAction(Offer offer) {
+    if (isGuest) {
+      showLoginDialog();
+      return;
+    }
+
+    final iap = Get.put(InAppPurchaseController());
+    iap.pendingContentUuid = contentUuid;
+    iap.pendingLiveUuid = null;
+
+    final ids = ppvOffers
+        .map((o) => Platform.isIOS ? o.appleProductId : o.googleProductId)
+        .whereType<String>()
+        .toList();
+
+    if (ids.isEmpty) {
+      Utility.showSnackBar(
+        AppTranslations.resolve('content.not_for_sale'),
+        isError: true,
+      );
+      return;
+    }
+
+    if (Get.context != null && Get.context!.mounted) {
+      InAppPurchaseBottomSheet.show(
+        Get.context!,
+        offerProductIds: ids,
+        title: contentData.value?.data?.title,
+        preselect: Platform.isIOS ? offer.appleProductId : offer.googleProductId,
+      );
     }
   }
 
@@ -81,7 +172,7 @@ class InfoController extends BaseController {
         }
       }
     } catch (e) {
-      Utility.showSnackBar("Failed to load content details", isError: true, response: e);
+      Utility.showSnackBar(AppTranslations.resolve('content.load_failed'), isError: true, response: e);
     } finally {
       showLoader(false);
     }
@@ -140,7 +231,7 @@ class InfoController extends BaseController {
         magicLinkModel = response.body;
       }
     } catch (e) {
-      Utility.showSnackBar("Unable to play content", isError: true, response: e);
+      Utility.showSnackBar(AppTranslations.resolve('content.cannot_play'), isError: true, response: e);
     }
   }
 
@@ -152,15 +243,20 @@ class InfoController extends BaseController {
       return;
     }
 
-    // If it's paid, verify subscription status from API
-    if (contentData.value?.data?.isFree == false) {
+    // A pay-per-view title is not unlocked by subscribing, so this shortcut
+    // must not run for one: it offered plans to someone who would still not
+    // be able to watch after paying for them. The server's own decision,
+    // which knows the difference, is used instead.
+    final canSubscribeIntoIt = access?.hasSubscribe ?? true;
+
+    if (contentData.value?.data?.isFree == false && canSubscribeIntoIt) {
       try {
         isPlayingContent.value = true;
         final subResponse = await homeChopperService.getSubscriptionAPI();
-        
+
         if (subResponse.isSuccessful && subResponse.body != null) {
           final subData = subResponse.body!;
-          
+
           if (subData.hasSubscription == false) {
             if (Get.context != null && Get.context!.mounted) {
               InAppPurchaseBottomSheet.show(Get.context!);
@@ -187,13 +283,17 @@ class InfoController extends BaseController {
             RoutesName.playerScreen,
             arguments: {'uuid': contentUuid, 'type': 'movie'},
           );
-        } else if (response.body!.code == "SUBSCRIPTION_REQUIRED") {
-          if (Get.context != null && Get.context!.mounted) {
-            InAppPurchaseBottomSheet.show(Get.context!);
-          }
+        } else {
+          _openPaywallFor(response.body!.code);
         }
+      } else if (response.statusCode == 403 || response.statusCode == 402) {
+        // A refusal to play is the paywall's cue, not an error to report. The
+        // server answers with its own code here, and has for long enough that
+        // several are in circulation, so treat the refusal itself as the
+        // signal rather than matching on one spelling of it.
+        _openPaywallFor(response.body?.code);
       } else {
-        Utility.showSnackBar("Unable to play content", isError: true, response: response);
+        Utility.showSnackBar(AppTranslations.resolve('content.cannot_play'), isError: true, response: response);
       }
     } catch (e, s) {
       print("Error in playAction: $e");
@@ -201,6 +301,39 @@ class InfoController extends BaseController {
     } finally {
       isPlayingContent.value = false;
     }
+  }
+
+  /// Show the right way to pay for this title.
+  ///
+  /// A pay-per-view title has no subscribe route, so offering plans there
+  /// leaves the viewer with no way to watch at all.
+  void _openPaywallFor(String? code) {
+    if (Get.context == null || !Get.context!.mounted) return;
+
+    if (code == 'NOT_RELEASED') {
+      Utility.showSnackBar(AppTranslations.resolve('content.not_watchable'));
+      return;
+    }
+
+    final ids = ppvOffers
+        .map((o) => Platform.isIOS ? o.appleProductId : o.googleProductId)
+        .whereType<String>()
+        .toList();
+
+    if (ids.isNotEmpty && !(access?.hasSubscribe ?? true)) {
+      final iap = Get.put(InAppPurchaseController());
+      iap.pendingContentUuid = contentUuid;
+      iap.pendingLiveUuid = null;
+
+      InAppPurchaseBottomSheet.show(
+        Get.context!,
+        offerProductIds: ids,
+        title: contentData.value?.data?.title,
+      );
+      return;
+    }
+
+    InAppPurchaseBottomSheet.show(Get.context!);
   }
 
   void playEpisode(Episodes episode) async {
@@ -231,11 +364,11 @@ class InfoController extends BaseController {
           }
         }
       } else {
-        Utility.showSnackBar("Unable to play episode", isError: true, response: response);
+        Utility.showSnackBar(AppTranslations.resolve('content.cannot_play_episode'), isError: true, response: response);
       }
     } catch (e) {
       print("Error in playEpisode: $e");
-      Utility.showSnackBar("Unable to play episode", isError: true, response: e);
+      Utility.showSnackBar(AppTranslations.resolve('content.cannot_play_episode'), isError: true, response: e);
     } finally {
       isPlayingContent.value = false;
     }
@@ -341,14 +474,14 @@ class InfoController extends BaseController {
           );
         } else {
           Utility.showSnackBar(
-            "Action failed",
+            AppTranslations.resolve('common.action_failed'),
             isError: true,
             response: response,
           );
         }
       } else {
         Utility.showSnackBar(
-          "Something went wrong. Please try again.",
+          AppTranslations.resolve('common.try_again_message'),
           isError: true,
           response: response,
         );
@@ -356,7 +489,7 @@ class InfoController extends BaseController {
     } catch (e) {
       print("Error toggling watchlist: $e");
       Utility.showSnackBar(
-        "Connection error. Please check your internet.",
+        AppTranslations.resolve('common.connection_error'),
         isError: true,
         response: e,
       );
@@ -370,7 +503,7 @@ class InfoController extends BaseController {
     if (shareData != null && shareData.url != null) {
       ShareHelper.shareNative(shareData: shareData);
     } else {
-      Utility.showSnackBar("Share link not available", isError: true);
+      Utility.showSnackBar(AppTranslations.resolve('content.share_unavailable'), isError: true);
     }
   }
 

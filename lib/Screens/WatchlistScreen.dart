@@ -8,6 +8,7 @@ import 'package:ottapp/Controllers/WatchlistController.dart';
 import 'package:ottapp/Router/RouterName.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Models/ShortsListModel.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class WatchlistScreen extends GetView<WatchlistController> {
   const WatchlistScreen({super.key});
@@ -26,7 +27,7 @@ class WatchlistScreen extends GetView<WatchlistController> {
             onPressed: () => Get.back(),
           ),
           title: AppTextWidget(
-            text: "My Watchlist",
+            text: AppTranslations.resolve('watchlist.title'),
             color: AppColors.white,
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
@@ -65,9 +66,9 @@ class WatchlistScreen extends GetView<WatchlistController> {
                     controller.selectedTab.value = index;
                     index == 0 ? controller.fetchWatchlist(): controller.fetchShortlist();
                   },
-                  tabs: const [
-                    Tab(text: "Movies"),
-                    Tab(text: "Shorts"),
+                  tabs: [
+                    Tab(text: AppTranslations.resolve('watchlist.movies')),
+                    Tab(text: AppTranslations.resolve('watchlist.shorts')),
                   ],
                 ),
               ),
@@ -93,8 +94,8 @@ class WatchlistScreen extends GetView<WatchlistController> {
       if (controller.watchlistItems.isEmpty) {
         return _buildEmptyState(
           icon: Icons.favorite_border,
-          title: "Your watchlist is empty",
-          subtitle: "Add movies and series to watch them later",
+          title: AppTranslations.resolve('watchlist.empty'),
+          subtitle: AppTranslations.resolve('watchlist.empty_hint'),
         );
       }
 
@@ -107,8 +108,8 @@ class WatchlistScreen extends GetView<WatchlistController> {
       if (controller.shortsWatchlistItems.isEmpty) {
         return _buildEmptyState(
           icon: Icons.video_collection_outlined,
-          title: "Your shorts watchlist is empty",
-          subtitle: "Add shorts and reels to watch them later",
+          title: AppTranslations.resolve('watchlist.shorts_empty'),
+          subtitle: AppTranslations.resolve('watchlist.shorts_empty_hint'),
         );
       }
 

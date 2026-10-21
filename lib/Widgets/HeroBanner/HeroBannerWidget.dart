@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ottapp/Const/AppConstants.dart';
-import 'package:ottapp/Const/AppText.dart';
+import 'package:ottapp/Const/SectionTypes.dart';
 import 'package:ottapp/Models/HomeModel.dart';
 import 'package:ottapp/Constants/AppNetworkImage.dart';
 import 'dart:async';
@@ -264,7 +264,7 @@ class _HeroBannerWidgetState extends State<HeroBannerWidget> {
                               if (UserPreference.getValue(key: PrefKeys.logInToken) == null) {
                                 Get.find<BaseController>().showLoginDialog();
                               } else {
-                                if(widget.section.items![currentIndex].item_type == AppText.item_type ){
+                                if(widget.section.items![currentIndex].item_type == SectionTypes.item_type ){
                                   final item = widget.section.items![currentIndex];
                                   Get.toNamed(
                                     RoutesName.reelShortsScreen,

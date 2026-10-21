@@ -32,6 +32,9 @@ class InAppPurchaseService {
     OnPurchaseError? onPurchaseError,
     OnPurchaseRestored? onPurchaseRestored,
     VoidCallback? onPurchasePending,
+    /// Which store products to query. The caller passes the ids the server
+    /// defines; the bundled constants are only a fallback.
+    Set<String>? productIds,
   }) async {
     this.onPurchaseSuccess = onPurchaseSuccess;
     this.onPurchaseError = onPurchaseError;
@@ -59,7 +62,7 @@ class InAppPurchaseService {
     );
 
     // Preload products
-    await loadProducts(InAppPurchaseConstants.allProductIds);
+    await loadProducts(productIds ?? InAppPurchaseConstants.allProductIds);
   }
 
   /// Query products configured in App Store Connect / Google Play Console
