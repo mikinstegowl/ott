@@ -10,6 +10,7 @@ import 'package:ottapp/Router/RouterName.dart';
 import 'package:ottapp/Widgets/AppTextFieldWidget.dart';
 import 'package:ottapp/Widgets/AppPrimaryButton.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class LoginScreen extends GetView<LoginController> {
   const LoginScreen({super.key});
@@ -118,7 +119,7 @@ class LoginScreen extends GetView<LoginController> {
                               controller.loginAsGuest();
                             },
                             child: AppTextWidget(
-                              text: "Login as Guest",
+                              text: AppTranslations.resolve('auth.login_as_guest'),
                               color: AppColors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,

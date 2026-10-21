@@ -28,6 +28,7 @@ class AppTranslations extends Translations {
   }
 
   static const Map<String, String> _en = {
+    'auth.login_as_guest': 'Login as Guest',
     'plan.lifetime_vip': 'Lifetime VIP Access',
     'plan.yearly_vip': 'Yearly VIP Pass (Save 40%)',
     'plan.monthly_vip': 'Monthly VIP Pass',
@@ -203,6 +204,7 @@ class AppTranslations extends Translations {
   };
 
   static const Map<String, String> _es = {
+    'auth.login_as_guest': 'Entrar como invitado',
     'plan.lifetime_vip': 'Acceso VIP de por vida',
     'plan.yearly_vip': 'Pase VIP anual (ahorra 40%)',
     'plan.monthly_vip': 'Pase VIP mensual',

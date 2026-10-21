@@ -17,6 +17,7 @@ import 'package:ottapp/Services/FirebaseNotificationManager.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:ottapp/Localization/AppTranslations.dart';
 import 'package:ottapp/Localization/LanguageService.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,6 +64,15 @@ class MyApp extends StatelessWidget {
           locale: LanguageService.currentLocale(),
           fallbackLocale: LanguageService.fallbackLocale,
           supportedLocales: LanguageService.supportedLocales,
+          // Flutter's own wording — dialog buttons, date pickers, the text
+          // screen readers announce. Declaring a non-English locale without
+          // these throws "No MaterialLocalizations found" and the screen
+          // renders blank rather than showing an error.
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           scrollBehavior: const MaterialScrollBehavior().copyWith(
             dragDevices: {
               PointerDeviceKind.mouse,
