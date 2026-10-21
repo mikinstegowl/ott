@@ -11,6 +11,7 @@ import 'package:ottapp/Constants/InAppPurchaseConstants.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
 import 'package:ottapp/Services/InAppPurchaseService.dart';
 import 'package:ottapp/Widgets/InAppPurchase/InAppPurchaseBottomSheet.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class InAppPurchaseController extends BaseController {
   final InAppPurchaseService _iapService = InAppPurchaseService();
@@ -198,7 +199,7 @@ class InAppPurchaseController extends BaseController {
     if (!success) {
       isPurchasing.value = false;
       Utility.showSnackBar(
-        'Could not initiate purchase. Please try again.',
+        AppTranslations.resolve('purchase.could_not_start'),
         isError: true,
       );
     }
@@ -216,7 +217,7 @@ class InAppPurchaseController extends BaseController {
       }
 
       await _iapService.restorePurchases();
-      Utility.showSnackBar('Checking for previous purchases...');
+      Utility.showSnackBar(AppTranslations.resolve('purchase.checking_previous'));
     } catch (e) {
       Utility.showSnackBar(
         'Restore failed: $e',
@@ -236,13 +237,13 @@ class InAppPurchaseController extends BaseController {
 
     if (verified) {
       _deliverContent(purchase);
-      Utility.showSnackBar('Thank you! Your purchase was completed.');
+      Utility.showSnackBar(AppTranslations.resolve('purchase.thank_you'));
       InAppPurchaseBottomSheet.close();
     } else {
       Utility.showSnackBar(
         lastVerificationError.value.isNotEmpty
             ? lastVerificationError.value
-            : 'Could not verify purchase with server. Please contact support.',
+            : AppTranslations.resolve('purchase.could_not_verify'),
         isError: true,
       );
     }
@@ -251,7 +252,7 @@ class InAppPurchaseController extends BaseController {
   /// Called when purchase has an error or is cancelled
   void _handlePurchaseError(IAPError? error) {
     isPurchasing.value = false;
-    final message = error?.message ?? 'Purchase was cancelled or failed.';
+    final message = error?.message ?? AppTranslations.resolve('purchase.cancelled_or_failed');
     debugPrint('[IapController] Purchase error: $message');
     Utility.showSnackBar(
       message,
@@ -332,7 +333,7 @@ class InAppPurchaseController extends BaseController {
 
       if (!ok) {
         final message = (body is Map ? body['message'] : null) ??
-            'We could not confirm that purchase.';
+            AppTranslations.resolve('purchase.could_not_confirm');
         debugPrint('[IapController] Server rejected the receipt: $message');
         lastVerificationError.value = message.toString();
       }

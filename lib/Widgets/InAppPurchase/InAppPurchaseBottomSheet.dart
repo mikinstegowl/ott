@@ -7,6 +7,7 @@ import 'package:ottapp/Constants/InAppPurchaseConstants.dart';
 import 'package:ottapp/Controllers/InAppPurchaseController.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class InAppPurchaseBottomSheet extends StatelessWidget {
   const InAppPurchaseBottomSheet({super.key, this.offerProductIds, this.title});
@@ -66,12 +67,12 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
   /// The heading, which has to match what is being sold. "Upgrade to VIP —
   /// unlimited episodes" is wrong above a 48-hour rental of one film.
   String get _heading => offerProductIds == null
-      ? 'Choose your plan'
-      : (title == null || title!.isEmpty ? 'Rent or buy' : 'Rent or buy $title');
+      ? AppTranslations.resolve('paywall.choose_plan')
+      : (title == null || title!.isEmpty ? AppTranslations.resolve('paywall.rent_or_buy') : 'Rent or buy $title');
 
   String get _subheading => offerProductIds == null
-      ? 'Watch the full catalogue on any device'
-      : 'One payment — no subscription needed';
+      ? AppTranslations.resolve('paywall.full_catalogue')
+      : AppTranslations.resolve('paywall.one_payment');
 
   /// What this sheet is allowed to show.
   List<ProductDetails> _visibleProducts(InAppPurchaseController c) =>
@@ -175,14 +176,14 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                       Icon(Icons.storefront_outlined, size: 40.sp, color: Colors.white54),
                       SizedBox(height: 8.h),
                       AppTextWidget(
-                        text: 'No products found',
+                        text: AppTranslations.resolve('paywall.no_products'),
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
                       SizedBox(height: 4.h),
                       AppTextWidget(
-                        text: 'Please check your Store setup or try again later.',
+                        text: AppTranslations.resolve('paywall.check_store'),
                         fontSize: 12.sp,
                         color: Colors.white54,
                         textAlign: TextAlign.center,
@@ -191,9 +192,9 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                       TextButton.icon(
                         onPressed: controller.refreshProducts,
                         icon: const Icon(Icons.refresh, color: AppColors.appColors),
-                        label: const Text(
-                          'Retry',
-                          style: TextStyle(color: AppColors.appColors),
+                        label: Text(
+                          AppTranslations.resolve('common.retry'),
+                          style: const TextStyle(color: AppColors.appColors),
                         ),
                       )
                     ],
@@ -238,7 +239,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                         ),
                       )
                     : Text(
-                        'Continue',
+                        AppTranslations.resolve('common.continue'),
                         style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                       ),
               ),
@@ -250,7 +251,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                 child: TextButton(
                   onPressed: controller.isPurchasing.value ? null : controller.restore,
                   child: Text(
-                    'Restore Purchases',
+                    AppTranslations.resolve('paywall.restore'),
                     style: TextStyle(
                       color: AppColors.lightWhite70,
                       fontSize: 13.sp,
@@ -264,9 +265,9 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildLegalLink('Terms of Use', InAppPurchaseConstants.termsOfServiceUrl),
+                  _buildLegalLink(AppTranslations.resolve('paywall.terms'), InAppPurchaseConstants.termsOfServiceUrl),
                   Text(' • ', style: TextStyle(color: Colors.white38, fontSize: 12.sp)),
-                  _buildLegalLink('Privacy Policy', InAppPurchaseConstants.privacyPolicyUrl),
+                  _buildLegalLink(AppTranslations.resolve('paywall.privacy'), InAppPurchaseConstants.privacyPolicyUrl),
                 ],
               ),
             ],

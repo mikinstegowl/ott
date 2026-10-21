@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:chopper/chopper.dart';
 import 'package:ottapp/SharedPreferences/PrefKeys.dart';
 import 'package:ottapp/SharedPreferences/shared_preferences.dart';
+import 'package:ottapp/Localization/LanguageService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:get/get.dart' as g;
@@ -99,7 +100,10 @@ class ApplyHeaderInterceptor implements Interceptor {
     // request either way.
     if (token == null || token.isEmpty) {
       return chain.proceed(
-        applyHeaders(chain.request, {'X-Device-Type': _platform}),
+        applyHeaders(chain.request, {
+          'X-Device-Type': _platform,
+          'Accept-Language': LanguageService.header,
+        }),
       );
     }
 
@@ -109,6 +113,9 @@ class ApplyHeaderInterceptor implements Interceptor {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
         'X-Device-Type': _platform,
+        // Titles, descriptions, plan names and error messages are translated
+        // on the server, so the language travels with every request.
+        'Accept-Language': LanguageService.header,
       }),
     );
   }

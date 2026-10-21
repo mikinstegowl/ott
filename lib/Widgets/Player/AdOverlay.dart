@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ottapp/Controllers/AdBreakController.dart';
 import 'package:video_player/video_player.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 /// Covers the player while an ad runs.
 ///
@@ -57,7 +58,7 @@ class AdOverlay extends StatelessWidget {
                         borderRadius: BorderRadius.circular(3.r),
                       ),
                       child: Text(
-                        'Ad',
+                        AppTranslations.resolve('ads.label'),
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 11.sp,
@@ -96,7 +97,7 @@ class AdOverlay extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(right: 10.w),
                         child: _AdButton(
-                          label: 'Visit advertiser',
+                          label: AppTranslations.resolve('ads.visit_advertiser'),
                           icon: Icons.open_in_new,
                           onTap: controller.openAdvertiser,
                         ),
@@ -104,7 +105,7 @@ class AdOverlay extends StatelessWidget {
                     if (controller.skipIn != null)
                       _AdButton(
                         label: controller.canSkip
-                            ? 'Skip ad'
+                            ? AppTranslations.resolve('ads.skip')
                             : 'Skip in ${controller.skipIn}',
                         icon: controller.canSkip ? Icons.skip_next : null,
                         filled: controller.canSkip,

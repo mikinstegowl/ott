@@ -9,7 +9,7 @@ import 'package:ottapp/Router/RouterName.dart';
 import 'package:ottapp/Models/HomeModel.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Constants/AppNetworkImage.dart';
-import 'package:ottapp/Const/AppText.dart';
+import 'package:ottapp/Const/SectionTypes.dart';
 import 'package:ottapp/SharedPreferences/PrefKeys.dart';
 import 'package:ottapp/SharedPreferences/shared_preferences.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
@@ -71,7 +71,7 @@ class HorizontalRailWidget extends StatelessWidget {
             padding: EdgeInsets.only(left: 10.w),
             itemBuilder: (context, index) {
               final item = items[index];
-              if (index == items.length - 4 && section.hasMore == true && section.layoutType != AppText.top_10_rail) {
+              if (index == items.length - 4 && section.hasMore == true && section.layoutType != SectionTypes.top_10_rail) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   onLoadMore?.call();
                 });

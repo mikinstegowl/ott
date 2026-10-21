@@ -15,6 +15,8 @@ import 'package:ottapp/firebase_options.dart';
 
 import 'package:ottapp/Services/FirebaseNotificationManager.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
+import 'package:ottapp/Localization/LanguageService.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +57,12 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           initialBinding: BaseControllerBindings(),
           debugShowCheckedModeBanner: false,
+          // Preferences are loaded before runApp, so the chosen language is
+          // known in time for the first frame rather than flashing English.
+          translations: AppTranslations(),
+          locale: LanguageService.currentLocale(),
+          fallbackLocale: LanguageService.fallbackLocale,
+          supportedLocales: LanguageService.supportedLocales,
           scrollBehavior: const MaterialScrollBehavior().copyWith(
             dragDevices: {
               PointerDeviceKind.mouse,

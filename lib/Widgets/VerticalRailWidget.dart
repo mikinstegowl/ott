@@ -7,7 +7,7 @@ import 'package:ottapp/Models/HomeModel.dart';
 import 'package:get/get.dart';
 import 'package:ottapp/Router/RouterName.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
-import 'package:ottapp/Const/AppText.dart';
+import 'package:ottapp/Const/SectionTypes.dart';
 import 'package:ottapp/SharedPreferences/PrefKeys.dart';
 import 'package:ottapp/SharedPreferences/shared_preferences.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
@@ -76,7 +76,7 @@ class VerticalRailWidget extends StatelessWidget {
                 onLoadMore: () {
                   if (index == items.length - 4 &&
                       section.hasMore == true &&
-                      section.layoutType != AppText.top_10_rail) {
+                      section.layoutType != SectionTypes.top_10_rail) {
                     onLoadMore?.call();
                   }
                 },
@@ -122,8 +122,8 @@ class VerticalRailItem extends StatelessWidget {
         } else if (item.item_type == 'shorts' ||
             item.contentType == 'Short Series' ||
             item.contentType == 'shorts' ||
-            section.layoutType == AppText.shorts_rail ||
-            section.layoutType == AppText.shorts_grid) {
+            section.layoutType == SectionTypes.shorts_rail ||
+            section.layoutType == SectionTypes.shorts_grid) {
           Get.toNamed(
             RoutesName.reelShortsScreen,
             arguments: {

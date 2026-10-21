@@ -5,6 +5,8 @@ import 'package:ottapp/Const/AppColors.dart';
 import 'package:ottapp/Controllers/ProfileController.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Constants/AppLoader.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
+import 'package:ottapp/Localization/LanguageService.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -21,7 +23,7 @@ class ProfileScreen extends GetView<ProfileController> {
         //   onPressed: () => Get.back(),
         // ),
         title: AppTextWidget(
-          text: "My Profile",
+          text: AppTranslations.resolve('profile.title'),
           color: AppColors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -35,7 +37,7 @@ class ProfileScreen extends GetView<ProfileController> {
 
         final data = controller.profileModel.value?.data;
         if (data == null) {
-          return const Center(child: AppTextWidget(text: "No profile data found", color: Colors.white));
+          return Center(child: AppTextWidget(text: AppTranslations.resolve('profile.none_found'), color: Colors.white));
         }
 
         return SingleChildScrollView(
@@ -80,25 +82,26 @@ class ProfileScreen extends GetView<ProfileController> {
               // SizedBox(height: 30.h),
 
               // Personal Information Section
-              _buildSectionTitle("Personal Information"),
+              _buildSectionTitle(AppTranslations.resolve('profile.personal_information')),
               SizedBox(height: 10.h),
-              _buildEditableTile("Full Name", controller.nameController),
-              _buildEditableTile("Email Address", controller.emailController, enabled: false),
-              _buildEditableTile("Phone Number", controller.phoneController),
+              _buildEditableTile(AppTranslations.resolve('auth.full_name'), controller.nameController),
+              _buildEditableTile(AppTranslations.resolve('auth.email_address'), controller.emailController, enabled: false),
+              _buildEditableTile(AppTranslations.resolve('profile.phone_number'), controller.phoneController),
               _buildQualitySelector(),
+              _buildLanguagePicker(),
               SizedBox(height: 30.h),
 
               // Change Password Section
-              _buildSectionTitle("Change Password"),
+              _buildSectionTitle(AppTranslations.resolve('profile.change_password')),
               AppTextWidget(
                 text: "(leave blank to keep current)",
                 color: AppColors.grey500,
                 fontSize: 12,
               ),
               SizedBox(height: 10.h),
-              _buildEditableTile("Current Password", controller.currentPasswordController, isPassword: true),
-              _buildEditableTile("New Password", controller.newPasswordController, isPassword: true),
-              _buildEditableTile("Confirm Password", controller.confirmPasswordController, isPassword: true),
+              _buildEditableTile(AppTranslations.resolve('profile.current_password'), controller.currentPasswordController, isPassword: true),
+              _buildEditableTile(AppTranslations.resolve('profile.new_password'), controller.newPasswordController, isPassword: true),
+              _buildEditableTile(AppTranslations.resolve('auth.confirm_password'), controller.confirmPasswordController, isPassword: true),
               SizedBox(height: 20.h),
 
               // Update Profile Button
@@ -112,7 +115,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     foregroundColor: AppColors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
                   ),
-                  child: const Text("Update Profile", style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(AppTranslations.resolve('profile.update_profile'), style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
               SizedBox(height: 30.h),
@@ -133,7 +136,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
                   ),
                   child: AppTextWidget(
-                    text: "Log Out",
+                    text: AppTranslations.resolve('profile.log_out'),
                     color: AppColors.red,
                     fontWeight: FontWeight.bold,
                   ),
@@ -151,7 +154,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
                   ),
                   child: AppTextWidget(
-                    text: "Delete Account",
+                    text: AppTranslations.resolve('profile.delete_account'),
                     color: AppColors.red,
                     fontWeight: FontWeight.bold,
                   ),
@@ -290,7 +293,11 @@ class ProfileScreen extends GetView<ProfileController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppTextWidget(text: "Preferred Quality", color: AppColors.grey, fontSize: 12),
+          AppTextWidget(
+            text: AppTranslations.resolve('profile.preferred_quality'),
+            color: AppColors.grey,
+            fontSize: 12,
+          ),
           SizedBox(height: 6.h),
           Theme(
             data: Theme.of(Get.context!).copyWith(canvasColor: AppColors.grey800),
@@ -317,6 +324,61 @@ class ProfileScreen extends GetView<ProfileController> {
                 if (newValue != null) {
                   controller.preferredQuality.value = newValue;
                 }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  /// Lets the viewer change the language from inside the app.
+  ///
+  /// There is no settings screen, and the profile is where the other
+  /// account preferences already live.
+  Widget _buildLanguagePicker() {
+    return Container(
+      margin: EdgeInsets.only(bottom: 15.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppTextWidget(
+            text: AppTranslations.resolve('profile.language'),
+            color: AppColors.grey,
+            fontSize: 12,
+          ),
+          SizedBox(height: 6.h),
+          Theme(
+            data: Theme.of(Get.context!).copyWith(canvasColor: AppColors.grey800),
+            child: DropdownButtonFormField<String>(
+              initialValue: LanguageService.currentCode(),
+              dropdownColor: AppColors.grey800,
+              style: TextStyle(color: AppColors.white, fontSize: 14.sp),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: AppColors.white10,
+                contentPadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 0.h),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.r),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              items: LanguageService.supported.map((String code) {
+                return DropdownMenuItem<String>(
+                  value: code,
+                  child: Text(LanguageService.names[code] ?? code),
+                );
+              }).toList(),
+              onChanged: (newValue) async {
+                if (newValue == null) return;
+
+                await LanguageService.change(newValue);
+
+                // Titles and descriptions are translated by the server, and
+                // what is on screen was fetched in the old language, so the
+                // screen is rebuilt rather than left half-translated.
+                controller.fetchProfileData();
               },
             ),
           ),
