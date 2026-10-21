@@ -19,6 +19,7 @@ import 'package:ottapp/Widgets/SponsorRailWidget.dart';
 
 import 'package:ottapp/Widgets/SectionSkeleton.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -138,8 +139,8 @@ class HomeScreen extends GetView<HomeController> {
               //     color: AppColors.white54,
               //     size: 20.sp,
               //   ),
-              //   title: const AppTextWidget(
-              //     text: "Reel Shorts",
+              //   title: AppTextWidget(
+              //     text: AppTranslations.resolve('home.reel_shorts'),
               //     color: AppColors.white,
               //     fontSize: 14,
               //     fontWeight: FontWeight.normal,
@@ -156,8 +157,8 @@ class HomeScreen extends GetView<HomeController> {
                   color: AppColors.white54,
                   size: 20.sp,
                 ),
-                title: const AppTextWidget(
-                  text: "My Watchlist",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('watchlist.title'),
                   color: AppColors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
@@ -173,8 +174,8 @@ class HomeScreen extends GetView<HomeController> {
                   color: AppColors.white54,
                   size: 20.sp,
                 ),
-                title: const AppTextWidget(
-                  text: "FAQ",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('home.faq'),
                   color: AppColors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
@@ -193,8 +194,8 @@ class HomeScreen extends GetView<HomeController> {
                   color: AppColors.white54,
                   size: 20.sp,
                 ),
-                title: const AppTextWidget(
-                  text: "Support",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('home.support'),
                   color: AppColors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
@@ -206,8 +207,8 @@ class HomeScreen extends GetView<HomeController> {
               ),
               ListTile(
                 leading: const Icon(Icons.logout, color: AppColors.red),
-                title: const AppTextWidget(
-                  text: "Logout",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('profile.log_out'),
                   color: AppColors.red,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -219,8 +220,8 @@ class HomeScreen extends GetView<HomeController> {
                   Icons.delete_outline_rounded,
                   color: AppColors.red,
                 ),
-                title: const AppTextWidget(
-                  text: "Delete Account",
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('profile.delete_account'),
                   color: AppColors.red,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

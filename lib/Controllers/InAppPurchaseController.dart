@@ -361,7 +361,7 @@ class InAppPurchaseController extends BaseController {
     return [
       ProductDetails(
         id: InAppPurchaseConstants.monthlySubscriptionId,
-        title: 'Monthly VIP Pass',
+        title: AppTranslations.resolve('plan.monthly_vip'),
         description: 'Unlimited streaming for 1 month',
         price: '\$4.99 / mo',
         rawPrice: 4.99,
@@ -369,7 +369,7 @@ class InAppPurchaseController extends BaseController {
       ),
       ProductDetails(
         id: InAppPurchaseConstants.yearlySubscriptionId,
-        title: 'Yearly VIP Pass (Save 40%)',
+        title: AppTranslations.resolve('plan.yearly_vip'),
         description: 'Best Value! Full access for 12 months',
         price: '\$39.99 / yr',
         rawPrice: 39.99,
@@ -377,7 +377,7 @@ class InAppPurchaseController extends BaseController {
       ),
       ProductDetails(
         id: InAppPurchaseConstants.lifetimeVipId,
-        title: 'Lifetime VIP Access',
+        title: AppTranslations.resolve('plan.lifetime_vip'),
         description: 'Pay once, unlimited streaming forever',
         price: '\$99.99',
         rawPrice: 99.99,

@@ -19,6 +19,7 @@ import 'package:ottapp/ChopperClientService/AuthChopperService.dart';
 import 'package:ottapp/Models/SubscriptionModel.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class HomeController extends BaseController with WidgetsBindingObserver {
   final HomeChopperService _homeChopperService;
@@ -125,7 +126,7 @@ class HomeController extends BaseController with WidgetsBindingObserver {
         return;
       }
 
-      Utility.showSnackBar('Failed to load user profile', isError: true, response: response);
+      Utility.showSnackBar(AppTranslations.resolve('home.profile_failed'), isError: true, response: response);
     } catch (e) {
       // Losing the profile is not worth a banner: the catalogue still works,
       // and the screens that need an account ask for one themselves.
@@ -184,7 +185,7 @@ class HomeController extends BaseController with WidgetsBindingObserver {
         magicLinkModel.value = response.body;
       }
     } catch (e) {
-      Utility.showSnackBar("Unable to play content", isError: true);
+      Utility.showSnackBar(AppTranslations.resolve('content.cannot_play'), isError: true);
     }
   }
 
@@ -192,7 +193,7 @@ class HomeController extends BaseController with WidgetsBindingObserver {
     if (isGuest) {
       final Uri url = Uri.parse("https://trebolplus.com/contact-support");
       if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-        Utility.showSnackBar("Could not launch support page", isError: true);
+        Utility.showSnackBar(AppTranslations.resolve('home.support_failed'), isError: true);
       }
       return;
     }
@@ -209,16 +210,16 @@ class HomeController extends BaseController with WidgetsBindingObserver {
         if (magicUrl != null && magicUrl.isNotEmpty) {
           final Uri url = Uri.parse(magicUrl);
           if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-            Utility.showSnackBar("Could not launch support page", isError: true);
+            Utility.showSnackBar(AppTranslations.resolve('home.support_failed'), isError: true);
           }
         } else {
-          Utility.showSnackBar("Unable to get support link", isError: true);
+          Utility.showSnackBar(AppTranslations.resolve('home.support_link_failed'), isError: true);
         }
       } else {
-        Utility.showSnackBar("Unable to get support link", isError: true, response: response);
+        Utility.showSnackBar(AppTranslations.resolve('home.support_link_failed'), isError: true, response: response);
       }
     } catch (e) {
-      Utility.showSnackBar("Unable to get support link", isError: true, response: e);
+      Utility.showSnackBar(AppTranslations.resolve('home.support_link_failed'), isError: true, response: e);
     } finally {
       showLoader(false);
     }
@@ -266,7 +267,7 @@ class HomeController extends BaseController with WidgetsBindingObserver {
           "user token ${UserPreference.getValue(key: PrefKeys.logInToken)}",
         );
       } else {
-        Utility.showSnackBar('Failed to load home data', isError: true, response: response);
+        Utility.showSnackBar(AppTranslations.resolve('home.load_failed'), isError: true, response: response);
       }
     } catch (e) {
       Utility.showSnackBar(e.toString(), isError: true, response: e);
@@ -337,7 +338,7 @@ class HomeController extends BaseController with WidgetsBindingObserver {
         //   }
         // }
       } else {
-        Utility.showSnackBar('Failed to load home data', isError: true, response: response);
+        Utility.showSnackBar(AppTranslations.resolve('home.load_failed'), isError: true, response: response);
       }
     } catch (e) {
       Utility.showSnackBar(e.toString(), isError: true, response: e);

@@ -13,6 +13,7 @@ import 'package:ottapp/Constants/CustomSnackBar.dart';
 import 'package:ottapp/Router/RouterName.dart';
 import 'package:ottapp/Constants/ShareHelper.dart';
 import 'package:ottapp/Widgets/InAppPurchase/InAppPurchaseBottomSheet.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class InfoController extends BaseController {
   final HomeChopperService homeChopperService;
@@ -131,7 +132,7 @@ class InfoController extends BaseController {
 
     if (ids.isEmpty) {
       Utility.showSnackBar(
-        'This title is not available for purchase in the app yet.',
+        AppTranslations.resolve('content.not_for_sale'),
         isError: true,
       );
       return;
@@ -171,7 +172,7 @@ class InfoController extends BaseController {
         }
       }
     } catch (e) {
-      Utility.showSnackBar("Failed to load content details", isError: true, response: e);
+      Utility.showSnackBar(AppTranslations.resolve('content.load_failed'), isError: true, response: e);
     } finally {
       showLoader(false);
     }
@@ -230,7 +231,7 @@ class InfoController extends BaseController {
         magicLinkModel = response.body;
       }
     } catch (e) {
-      Utility.showSnackBar("Unable to play content", isError: true, response: e);
+      Utility.showSnackBar(AppTranslations.resolve('content.cannot_play'), isError: true, response: e);
     }
   }
 
@@ -292,7 +293,7 @@ class InfoController extends BaseController {
         // signal rather than matching on one spelling of it.
         _openPaywallFor(response.body?.code);
       } else {
-        Utility.showSnackBar("Unable to play content", isError: true, response: response);
+        Utility.showSnackBar(AppTranslations.resolve('content.cannot_play'), isError: true, response: response);
       }
     } catch (e, s) {
       print("Error in playAction: $e");
@@ -310,7 +311,7 @@ class InfoController extends BaseController {
     if (Get.context == null || !Get.context!.mounted) return;
 
     if (code == 'NOT_RELEASED') {
-      Utility.showSnackBar('This title is not available to watch yet.');
+      Utility.showSnackBar(AppTranslations.resolve('content.not_watchable'));
       return;
     }
 
@@ -363,11 +364,11 @@ class InfoController extends BaseController {
           }
         }
       } else {
-        Utility.showSnackBar("Unable to play episode", isError: true, response: response);
+        Utility.showSnackBar(AppTranslations.resolve('content.cannot_play_episode'), isError: true, response: response);
       }
     } catch (e) {
       print("Error in playEpisode: $e");
-      Utility.showSnackBar("Unable to play episode", isError: true, response: e);
+      Utility.showSnackBar(AppTranslations.resolve('content.cannot_play_episode'), isError: true, response: e);
     } finally {
       isPlayingContent.value = false;
     }
@@ -473,14 +474,14 @@ class InfoController extends BaseController {
           );
         } else {
           Utility.showSnackBar(
-            "Action failed",
+            AppTranslations.resolve('common.action_failed'),
             isError: true,
             response: response,
           );
         }
       } else {
         Utility.showSnackBar(
-          "Something went wrong. Please try again.",
+          AppTranslations.resolve('common.try_again_message'),
           isError: true,
           response: response,
         );
@@ -488,7 +489,7 @@ class InfoController extends BaseController {
     } catch (e) {
       print("Error toggling watchlist: $e");
       Utility.showSnackBar(
-        "Connection error. Please check your internet.",
+        AppTranslations.resolve('common.connection_error'),
         isError: true,
         response: e,
       );
@@ -502,7 +503,7 @@ class InfoController extends BaseController {
     if (shareData != null && shareData.url != null) {
       ShareHelper.shareNative(shareData: shareData);
     } else {
-      Utility.showSnackBar("Share link not available", isError: true);
+      Utility.showSnackBar(AppTranslations.resolve('content.share_unavailable'), isError: true);
     }
   }
 

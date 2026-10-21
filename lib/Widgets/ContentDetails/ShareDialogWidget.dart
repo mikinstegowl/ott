@@ -10,6 +10,7 @@ import 'package:ottapp/Constants/CustomSnackBar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ottapp/Constants/ShareHelper.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class ShareDialogWidget extends StatelessWidget {
   final Share shareData;
@@ -21,7 +22,7 @@ class ShareDialogWidget extends StatelessWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      Utility.showSnackBar("Could not open application", isError: true);
+      Utility.showSnackBar(AppTranslations.resolve('share.could_not_open'), isError: true);
     }
   }
 
@@ -64,7 +65,7 @@ class ShareDialogWidget extends StatelessWidget {
   void _copyLink() {
     if (shareData.url != null) {
       Clipboard.setData(ClipboardData(text: shareData.url!));
-      Utility.showSnackBar("Link copied to clipboard");
+      Utility.showSnackBar(AppTranslations.resolve('share.link_copied'));
     }
   }
 
@@ -91,7 +92,7 @@ class ShareDialogWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppTextWidget(
-                text: "Share",
+                text: AppTranslations.resolve('common.share'),
                 color: AppColors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -165,7 +166,7 @@ class ShareDialogWidget extends StatelessWidget {
           
           // Copy Link
           AppTextWidget(
-            text: "Copy Link",
+            text: AppTranslations.resolve('share.copy_link'),
             color: AppColors.white,
             fontSize: 14,
             fontWeight: FontWeight.bold,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Const/AppColors.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 /// Floating right vertical action column with Claim, Like, Save, Episodes, and Share
 class ReelRightActionBar extends StatelessWidget {
@@ -44,7 +45,7 @@ class ReelRightActionBar extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 1. "Claim" Coin Reward Button
+          // 1. AppTranslations.resolve('shorts.claim') Coin Reward Button
           // GestureDetector(
           //   onTap: onClaimTap,
           //   child: Column(
@@ -81,7 +82,7 @@ class ReelRightActionBar extends StatelessWidget {
           //       //     borderRadius: BorderRadius.circular(6.r),
           //       //   ),
           //       //   child: AppTextWidget(
-          //       //     text: "Claim",
+          //       //     text: AppTranslations.resolve('shorts.claim'),
           //       //     fontSize: 9,
           //       //     fontWeight: FontWeight.bold,
           //       //     color: Colors.black,
@@ -151,7 +152,7 @@ class ReelRightActionBar extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 AppTextWidget(
-                  text: "Episodes",
+                  text: AppTranslations.resolve('content.episodes'),
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -174,7 +175,7 @@ class ReelRightActionBar extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 AppTextWidget(
-                  text: "Share",
+                  text: AppTranslations.resolve('common.share'),
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,

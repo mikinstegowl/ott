@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ottapp/Const/AppColors.dart';
 import 'package:ottapp/Controllers/SplashController.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 /// The first screen: what is on now, and who is watching.
 class SplashScreen extends StatelessWidget {
@@ -275,7 +276,7 @@ class _ProfileTile extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: 'Continue as $name',
+      label: AppTranslations.resolve('app.continue_as').replaceAll('@name', name),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(radius),

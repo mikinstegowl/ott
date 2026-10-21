@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ottapp/Const/AppColors.dart';
 import 'package:ottapp/Models/InfoModel.dart';
 import 'package:ottapp/Widgets/AppPrimaryButton.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class ContentActionButtons extends StatelessWidget {
   final String playText;
@@ -71,14 +72,14 @@ class ContentActionButtons extends StatelessWidget {
                 onFavorite,
                 iconColor: isInWatchlist ? AppColors.appColors : AppColors.white,
                 isLoading: isLoading,
-                text: "Watchlist",
+                text: AppTranslations.resolve('content.watchlist'),
               ),
               SizedBox(width: 30.w),
               _buildIconButton(
                 Icons.share,
                 onShare,
                 iconColor: AppColors.white,
-                text: "Share",
+                text: AppTranslations.resolve('common.share'),
               ),
             ],
           ),

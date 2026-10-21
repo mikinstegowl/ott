@@ -6,6 +6,7 @@ import 'package:ottapp/Const/AppColors.dart';
 import 'package:ottapp/Const/AppText.dart';
 import 'package:ottapp/Controllers/MainWrapperController.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class MainWrapper extends GetView<MainWrapperController> {
   const MainWrapper({super.key});
@@ -27,13 +28,13 @@ class MainWrapper extends GetView<MainWrapperController> {
                       side: const BorderSide(color: AppColors.white10),
                     ),
                     title: AppTextWidget(
-                      text: "Exit App",
+                      text: AppTranslations.resolve('app.exit_title'),
                       color: AppColors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
                     content: AppTextWidget(
-                      text: "Are you sure you want exit this app",
+                      text: AppTranslations.resolve('app.exit_message'),
                       color: AppColors.lightWhite70,
                       fontSize: 14,
                       maxLines: null,
@@ -43,7 +44,7 @@ class MainWrapper extends GetView<MainWrapperController> {
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(false),
                         child: AppTextWidget(
-                          text: "No",
+                          text: AppTranslations.resolve('common.no'),
                           color: AppColors.white,
                           fontSize: 14,
                         ),
@@ -53,7 +54,7 @@ class MainWrapper extends GetView<MainWrapperController> {
                           Navigator.of(context).pop(true);
                         },
                         child: AppTextWidget(
-                          text: "Yes",
+                          text: AppTranslations.resolve('common.yes'),
                           color: AppColors.appColors,
                           fontSize: 14,
                         ),

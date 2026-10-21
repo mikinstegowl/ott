@@ -11,6 +11,7 @@ import 'package:ottapp/Const/SectionTypes.dart';
 import 'package:ottapp/SharedPreferences/PrefKeys.dart';
 import 'package:ottapp/SharedPreferences/shared_preferences.dart';
 import 'package:ottapp/Controllers/BaseController.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class VerticalRailWidget extends StatelessWidget {
   final Sections section;
@@ -50,7 +51,7 @@ class VerticalRailWidget extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.only(left: 8.w),
                       child: AppTextWidget(
-                        text: "View All",
+                        text: AppTranslations.resolve('common.view_all'),
                         color: AppColors.appColors,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

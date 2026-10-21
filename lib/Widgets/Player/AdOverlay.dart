@@ -106,7 +106,7 @@ class AdOverlay extends StatelessWidget {
                       _AdButton(
                         label: controller.canSkip
                             ? AppTranslations.resolve('ads.skip')
-                            : 'Skip in ${controller.skipIn}',
+                            : AppTranslations.resolve('ads.skip_in').replaceAll('@seconds', '${controller.skipIn}'),
                         icon: controller.canSkip ? Icons.skip_next : null,
                         filled: controller.canSkip,
                         onTap: controller.canSkip ? controller.skip : null,

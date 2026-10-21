@@ -11,6 +11,7 @@ import 'package:ottapp/Controllers/MainWrapperController.dart';
 import 'package:ottapp/Models/ChatMessage.dart';
 
 import 'package:ottapp/Constants/AppUtils.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 
 class LiveVideoScreen extends GetView<LiveVideoController> {
@@ -144,7 +145,7 @@ class LiveVideoScreen extends GetView<LiveVideoController> {
                 ),
               ),
               SizedBox(width: 10.w),
-              AppTextWidget(text: "Live Chat", fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.white),
+              AppTextWidget(text: AppTranslations.resolve('live.chat'), fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.white),
             ],
           ),
           SizedBox(height: 12.h),
@@ -162,7 +163,7 @@ class LiveVideoScreen extends GetView<LiveVideoController> {
               if (controller.chatMessages.isEmpty) {
                 return Center(
                   child: AppTextWidget(
-                    text: "No messages yet. Be the first to say something!",
+                    text: AppTranslations.resolve('live.no_messages'),
                     color: AppColors.white24,
                     fontSize: 12,
                     textAlign: TextAlign.center,
@@ -192,7 +193,7 @@ class LiveVideoScreen extends GetView<LiveVideoController> {
                   controller: controller.chatController,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: "Say something...",
+                    hintText: AppTranslations.resolve('live.say_something'),
                     hintStyle: TextStyle(color: AppColors.white24, fontSize: 14.sp),
                     fillColor: const Color(0xFF1E1E1E),
                     filled: true,
@@ -223,7 +224,7 @@ class LiveVideoScreen extends GetView<LiveVideoController> {
                           color: AppColors.black,
                         ),
                       )
-                    : AppTextWidget(text: "Send", fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.black),
+                    : AppTextWidget(text: AppTranslations.resolve('live.send'), fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.black),
               )),
             ],
           ),
@@ -327,7 +328,7 @@ class LiveVideoScreen extends GetView<LiveVideoController> {
           Icon(Icons.error_outline, color: AppColors.red, size: 40.sp),
           SizedBox(height: 8.h),
           AppTextWidget(text: controller.errorMessage.value, fontSize: 12, textAlign: TextAlign.center),
-          TextButton(onPressed: controller.retry, child: const Text("Retry")),
+          TextButton(onPressed: controller.retry, child: Text(AppTranslations.resolve('common.retry'))),
         ],
       ),
     );

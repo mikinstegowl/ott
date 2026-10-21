@@ -15,6 +15,7 @@ import 'package:ottapp/SharedPreferences/shared_preferences.dart';
 import 'package:ottapp/Widgets/AppTextFieldWidget.dart';
 import 'package:ottapp/Widgets/InAppPurchase/InAppPurchaseBottomSheet.dart';
 import 'package:ottapp/Constants/CustomSnackBar.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class BaseController extends GetxController {
   RxBool isLoading = false.obs;
@@ -108,8 +109,8 @@ class BaseController extends GetxController {
                 ),
               ),
               SizedBox(height: 20.h),
-              const AppTextWidget(
-                text: "Delete Account?",
+              AppTextWidget(
+                text: AppTranslations.resolve('account.delete_title'),
                 color: AppColors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -126,7 +127,7 @@ class BaseController extends GetxController {
               SizedBox(height: 20.h),
               AppTextFieldWidget(
                 controller: passwordController,
-                hintText: "Enter Current Password",
+                hintText: AppTranslations.resolve('account.enter_current_password'),
                 obscureText: true,
               ),
               SizedBox(height: 30.h),
@@ -135,8 +136,8 @@ class BaseController extends GetxController {
                   Expanded(
                     child: TextButton(
                       onPressed: () => Get.back(),
-                      child: const AppTextWidget(
-                        text: "Cancel",
+                      child: AppTextWidget(
+                        text: AppTranslations.resolve('common.cancel'),
                         color: AppColors.white54,
                         fontSize: 14,
                       ),
@@ -147,7 +148,7 @@ class BaseController extends GetxController {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (passwordController.text.isEmpty) {
-                          Utility.showSnackBar("Password is required", isError: true);
+                          Utility.showSnackBar(AppTranslations.resolve('account.password_required'), isError: true);
                           return;
                         }
 
@@ -162,12 +163,12 @@ class BaseController extends GetxController {
                           if (response.isSuccessful) {
                             UserPreference.removeKey(key: PrefKeys.logInToken);
                             Get.offAllNamed(RoutesName.logInScreen);
-                            Utility.showSnackBar("Your account has been successfully deleted.");
+                            Utility.showSnackBar(AppTranslations.resolve('account.deleted'));
                           } else {
-                            Utility.showSnackBar("Failed to delete account. Please try again.", isError: true, response: response);
+                            Utility.showSnackBar(AppTranslations.resolve('account.delete_failed'), isError: true, response: response);
                           }
                         } catch (e) {
-                          Utility.showSnackBar("An error occurred", isError: true, response: e);
+                          Utility.showSnackBar(AppTranslations.resolve('common.error_occurred'), isError: true, response: e);
                         } finally {
                           showLoader(false);
                         }
@@ -179,8 +180,8 @@ class BaseController extends GetxController {
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                       ),
-                      child: const AppTextWidget(
-                        text: "Delete",
+                      child: AppTextWidget(
+                        text: AppTranslations.resolve('common.delete'),
                         color: AppColors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -254,8 +255,8 @@ class BaseController extends GetxController {
                   Expanded(
                     child: TextButton(
                       onPressed: () => Get.back(),
-                      child: const AppTextWidget(
-                        text: "Not Now",
+                      child: AppTextWidget(
+                        text: AppTranslations.resolve('common.not_now'),
                         color: AppColors.white54,
                         fontSize: 14,
                       ),
@@ -327,8 +328,8 @@ class BaseController extends GetxController {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                const AppTextWidget(
-                  text: "Login Required",
+                AppTextWidget(
+                  text: AppTranslations.resolve('auth.login_required'),
                   color: AppColors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -348,8 +349,8 @@ class BaseController extends GetxController {
                     Expanded(
                       child: TextButton(
                         onPressed: () => Get.back(),
-                        child: const AppTextWidget(
-                          text: "Cancel",
+                        child: AppTextWidget(
+                          text: AppTranslations.resolve('common.cancel'),
                           color: AppColors.white54,
                           fontSize: 14,
                         ),
@@ -370,8 +371,8 @@ class BaseController extends GetxController {
                             borderRadius: BorderRadius.circular(10.r),
                           ),
                         ),
-                        child: const AppTextWidget(
-                          text: "Login",
+                        child: AppTextWidget(
+                          text: AppTranslations.resolve('auth.login'),
                           color: AppColors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

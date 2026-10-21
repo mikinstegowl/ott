@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Models/InfoModel.dart';
 import 'package:ottapp/Widgets/ContentDetails/ShareDialogWidget.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 /// Helper class containing popup dialogs & bottom sheets for ReelShorts
 class ReelModals {
@@ -27,7 +28,7 @@ class ReelModals {
                   color: Colors.amber, size: 26.sp),
               SizedBox(width: 8.w),
               AppTextWidget(
-                text: "Daily Check-in Reward",
+                text: AppTranslations.resolve('shorts.daily_reward'),
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -52,7 +53,7 @@ class ReelModals {
               SizedBox(height: 6.h),
               AppTextWidget(
                 text:
-                    "Keep watching episodes to unlock daily treasure chests and rewards.",
+                    AppTranslations.resolve('shorts.keep_watching'),
                 fontSize: 12,
                 color: Colors.white70,
                 textAlign: TextAlign.center,
@@ -66,7 +67,7 @@ class ReelModals {
                 onClaim();
               },
               child: AppTextWidget(
-                text: "Claim Now",
+                text: AppTranslations.resolve('shorts.claim_now'),
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFFFF2A55),
@@ -153,7 +154,7 @@ class ReelModals {
               SizedBox(height: 12.h),
 
               AppTextWidget(
-                text: "Synopsis",
+                text: AppTranslations.resolve('content.synopsis'),
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -176,7 +177,7 @@ class ReelModals {
 
               // Cast List
               AppTextWidget(
-                text: "Cast & Crew",
+                text: AppTranslations.resolve('content.cast_crew'),
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -224,7 +225,7 @@ class ReelModals {
                 ),
                 icon: const Icon(Icons.play_arrow_rounded, color: Colors.white),
                 label: AppTextWidget(
-                  text: "Continue Watching EP. $currentEpisode",
+                  text: AppTranslations.resolve('content.continue_watching').replaceAll('@number', '\$currentEpisode'),
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -276,7 +277,7 @@ class ReelModals {
                   ),
                   SizedBox(height: 14.h),
                   AppTextWidget(
-                    text: "Share with Friends",
+                    text: AppTranslations.resolve('shorts.share_with_friends'),
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -287,7 +288,7 @@ class ReelModals {
                     children: [
                       _buildShareIcon(Icons.link_rounded, "Copy Link", () {
                         Navigator.pop(context);
-                        Get.snackbar("Copied", "Link copied to clipboard",
+                        Get.snackbar(AppTranslations.resolve('common.copied'), "Link copied to clipboard",
                             snackPosition: SnackPosition.BOTTOM);
                       }),
                       _buildShareIcon(Icons.message_rounded, "Message", () {

@@ -6,6 +6,7 @@ import 'package:ottapp/Widgets/Player/AdOverlay.dart';
 import 'package:chewie/chewie.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart' as yt;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 class AppVideoPlayerView extends StatelessWidget {
   final PlayerController controller;
@@ -267,7 +268,7 @@ class AppVideoPlayerView extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.r)),
                   padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
                 ),
-                child: const Text("Retry"),
+                child: Text(AppTranslations.resolve('common.retry')),
               ),
             ],
           ),

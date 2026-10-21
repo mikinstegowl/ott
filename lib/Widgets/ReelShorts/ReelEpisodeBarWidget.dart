@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Const/AppColors.dart';
+import 'package:ottapp/Localization/AppTranslations.dart';
 
 /// Bottom bar showing EP.X / EP.Y with up-arrow to open the episode drawer
 class ReelEpisodeBarWidget extends StatelessWidget {
@@ -54,7 +55,7 @@ class ReelEpisodeBarWidget extends StatelessWidget {
                 ),
               ),
               AppTextWidget(
-                text: "All Episodes",
+                text: AppTranslations.resolve('shorts.all_episodes'),
                 fontSize: 12,
                 color: Colors.white54,
               ),

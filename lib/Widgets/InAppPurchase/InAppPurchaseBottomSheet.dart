@@ -68,7 +68,7 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
   /// unlimited episodes" is wrong above a 48-hour rental of one film.
   String get _heading => offerProductIds == null
       ? AppTranslations.resolve('paywall.choose_plan')
-      : (title == null || title!.isEmpty ? AppTranslations.resolve('paywall.rent_or_buy') : 'Rent or buy $title');
+      : (title == null || title!.isEmpty ? AppTranslations.resolve('paywall.rent_or_buy') : AppTranslations.resolve('paywall.rent_or_buy_title').replaceAll('@title', title!));
 
   String get _subheading => offerProductIds == null
       ? AppTranslations.resolve('paywall.full_catalogue')
