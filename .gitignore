@@ -47,3 +47,10 @@ app.*.map.json
 # Gradle build output. The root /build/ rule above does not cover this one.
 android/build/
 android/app/build/
+
+# Signing and push credentials. An APNs or App Store Server key is a private
+# credential: one of these was committed and, worse, bundled into the app as a
+# Resource, which put it in every IPA anyone could download.
+*.p8
+*.p12
+*.mobileprovision
