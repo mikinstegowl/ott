@@ -5,7 +5,10 @@ import 'package:get/get.dart';
 import 'package:ottapp/Const/AppColors.dart';
 import 'package:ottapp/Const/AppText.dart';
 import 'package:ottapp/Constants/AppLoader.dart';
+import 'package:ottapp/Constants/CustomSnackBar.dart';
 import 'package:ottapp/Controllers/LoginController.dart';
+import 'package:ottapp/Network/AppChopperClient.dart';
+import 'package:ottapp/ChopperClientService/AuthChopperService.dart';
 import 'package:ottapp/Router/RouterName.dart';
 import 'package:ottapp/Widgets/AppTextFieldWidget.dart';
 import 'package:ottapp/Widgets/AppPrimaryButton.dart';
@@ -73,7 +76,19 @@ class LoginScreen extends GetView<LoginController> {
                         hintText: AppText.password,
                         obscureText: true,
                       ),
-                      SizedBox(height: 48.h),
+                      SizedBox(height: 8.h),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () => _showForgotPasswordDialog(context),
+                          child: AppTextWidget(
+                            text: 'Forgot Password?',
+                            color: AppColors.appColors,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 32.h),
 
                       // Login Button
                       AppPrimaryButton(
@@ -179,6 +194,86 @@ class LoginScreen extends GetView<LoginController> {
         fontSize: 14,
         fontWeight: FontWeight.w600,
       ),
+    );
+  }
+
+  void _showForgotPasswordDialog(BuildContext context) {
+    final emailController = TextEditingController();
+    final isLoading = false.obs;
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: const Color(0xFF1A1A1A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+        child: Padding(
+          padding: EdgeInsets.all(24.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppTextWidget(
+                text: 'Forgot Password',
+                color: AppColors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              SizedBox(height: 12.h),
+              AppTextWidget(
+                text: 'Enter your email address and we\'ll send you a new password.',
+                color: AppColors.lightWhite70,
+                fontSize: 14,
+              ),
+              SizedBox(height: 20.h),
+              AppTextFieldWidget(
+                controller: emailController,
+                hintText: 'Enter your email',
+                keyboardType: TextInputType.emailAddress,
+              ),
+              SizedBox(height: 20.h),
+              Obx(() => isLoading.value
+                ? const Center(child: CircularProgressIndicator(color: AppColors.appColors))
+                : AppPrimaryButton(
+                    text: 'Send New Password',
+                    onTap: () async {
+                      final email = emailController.text.trim();
+                      if (email.isEmpty) {
+                        Utility.showSnackBar('Please enter your email', isError: true);
+                        return;
+                      }
+                      isLoading.value = true;
+                      try {
+                        final service = AppChopperClient().getChopperService<AuthChopperService>();
+                        final response = await service.forgotPasswordAPI(param: {'email': email});
+                        if (response.isSuccessful) {
+                          Get.back();
+                          Utility.showSnackBar('A new password has been sent to your email.');
+                        } else {
+                          Utility.showSnackBar('Something went wrong. Please try again.', isError: true);
+                        }
+                      } catch (e) {
+                        Utility.showSnackBar('Something went wrong. Please try again.', isError: true);
+                      } finally {
+                        isLoading.value = false;
+                      }
+                    },
+                  ),
+              ),
+              SizedBox(height: 12.h),
+              GestureDetector(
+                onTap: () => Get.back(),
+                child: Center(
+                  child: AppTextWidget(
+                    text: 'Cancel',
+                    color: AppColors.lightWhite70,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierColor: Colors.black.withOpacity(0.7),
     );
   }
 }

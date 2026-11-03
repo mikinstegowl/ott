@@ -174,9 +174,15 @@ class InAppPurchaseController extends BaseController {
     }
   }
 
+  /// True while a purchase the user tapped "buy" for is in flight. StoreKit
+  /// replays old transactions on app start — those are NOT user-initiated and
+  /// should be verified silently without a "thank you" toast.
+  bool _userInitiatedPurchase = false;
+
   /// Trigger purchase flow for a product
   Future<void> purchase(ProductDetails product) async {
     isPurchasing.value = true;
+    _userInitiatedPurchase = true;
 
     // Mock Mode exists so the screens can be built before the store products
     // are live. It grants access WITHOUT a payment, so it is debug-only — in a
@@ -230,16 +236,20 @@ class InAppPurchaseController extends BaseController {
 
   /// Called when a real purchase transaction succeeds
   Future<void> _handlePurchaseSuccess(PurchaseDetails purchase) async {
+    final bool wasUserInitiated = _userInitiatedPurchase;
+    _userInitiatedPurchase = false;
     isPurchasing.value = false;
-    debugPrint('[IapController] Purchase succeeded: ${purchase.productID}');
+    debugPrint('[IapController] Purchase ${wasUserInitiated ? "(user)" : "(replay)"}: ${purchase.productID}');
 
     final bool verified = await _verifyReceiptWithServer(purchase);
 
     if (verified) {
       _deliverContent(purchase);
-      Utility.showSnackBar(AppTranslations.resolve('purchase.thank_you'));
-      InAppPurchaseBottomSheet.close();
-    } else {
+      if (wasUserInitiated) {
+        Utility.showSnackBar(AppTranslations.resolve('purchase.thank_you'));
+        InAppPurchaseBottomSheet.close();
+      }
+    } else if (wasUserInitiated) {
       Utility.showSnackBar(
         lastVerificationError.value.isNotEmpty
             ? lastVerificationError.value
@@ -251,13 +261,17 @@ class InAppPurchaseController extends BaseController {
 
   /// Called when purchase has an error or is cancelled
   void _handlePurchaseError(IAPError? error) {
+    final bool wasUserInitiated = _userInitiatedPurchase;
+    _userInitiatedPurchase = false;
     isPurchasing.value = false;
     final message = error?.message ?? AppTranslations.resolve('purchase.cancelled_or_failed');
     debugPrint('[IapController] Purchase error: $message');
-    Utility.showSnackBar(
-      message,
-      isError: true,
-    );
+    if (wasUserInitiated) {
+      Utility.showSnackBar(
+        message,
+        isError: true,
+      );
+    }
   }
 
   /// Called when a non-consumable or subscription is restored

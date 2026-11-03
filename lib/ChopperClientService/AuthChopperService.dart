@@ -42,4 +42,9 @@ abstract class AuthChopperService extends ChopperService {
   Future<Response<Map<String, dynamic>>> changePasswordAPI({
     @Body() required Map<String, dynamic> param,
   });
+
+  @POST(path: 'auth/forgot-password')
+  Future<Response<Map<String, dynamic>>> forgotPasswordAPI({
+    @Body() required Map<String, dynamic> param,
+  });
 }

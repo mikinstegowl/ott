@@ -84,4 +84,14 @@ final class _$AuthChopperService extends AuthChopperService {
     final Request $request = Request('PUT', $url, client.baseUrl, body: $body);
     return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }
+
+  @override
+  Future<Response<Map<String, dynamic>>> forgotPasswordAPI({
+    required Map<String, dynamic> param,
+  }) {
+    final Uri $url = Uri.parse('auth/forgot-password');
+    final $body = param;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
 }
