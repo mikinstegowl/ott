@@ -19,13 +19,25 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.1</string>
+	<string>1.0.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>3</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>whatsapp</string>
+		<string>tg</string>
+		<string>fb</string>
+		<string>twitter</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -71,21 +83,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>whatsapp</string>
-		<string>tg</string>
-		<string>fb</string>
-		<string>twitter</string>
-	</array>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<!-- Lets debug builds reach a Laravel server on this Mac over http.
-		     NSAllowsLocalNetworking covers localhost and the local network only;
-		     it does not weaken security for internet traffic and needs no
-		     justification at App Store review. -->
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
 </dict>
 </plist>

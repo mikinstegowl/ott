@@ -208,7 +208,24 @@ class InAppPurchaseBottomSheet extends StatelessWidget {
                   });
                 }),
 
-              SizedBox(height: 16.h),
+              SizedBox(height: 12.h),
+
+              // Apple-required auto-renewal disclaimer
+              if (offerProductIds == null && _visibleProducts(controller).isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(bottom: 12.h),
+                  child: Text(
+                    'Payment will be charged to your Apple ID account at confirmation of purchase. '
+                    'Subscription automatically renews unless canceled at least 24 hours before the end of the current period. '
+                    'Manage subscriptions in your Account Settings.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white38,
+                      fontSize: 10.sp,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
 
               // Purchase Button
               ElevatedButton(

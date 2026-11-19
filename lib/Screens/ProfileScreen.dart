@@ -7,6 +7,7 @@ import 'package:ottapp/Widgets/ApptextWidget.dart';
 import 'package:ottapp/Constants/AppLoader.dart';
 import 'package:ottapp/Localization/AppTranslations.dart';
 import 'package:ottapp/Localization/LanguageService.dart';
+import 'package:ottapp/Widgets/InAppPurchase/InAppPurchaseBottomSheet.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -75,11 +76,45 @@ class ProfileScreen extends GetView<ProfileController> {
               ),
               SizedBox(height: 30.h),
 
-              // Subscription Details Section
-              // _buildSectionTitle("Subscription Details"),
-              // SizedBox(height: 10.h),
-              // _buildSubscriptionCard(data),
-              // SizedBox(height: 30.h),
+              // Subscription Plans
+              GestureDetector(
+                onTap: () => InAppPurchaseBottomSheet.show(context),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 14.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.appColors.withAlpha(25),
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: AppColors.appColors.withAlpha(80)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.workspace_premium_rounded, color: AppColors.appColors, size: 24.sp),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppTextWidget(
+                              text: AppTranslations.resolve('profile.subscription_plans'),
+                              color: AppColors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            SizedBox(height: 2.h),
+                            AppTextWidget(
+                              text: AppTranslations.resolve('profile.view_upgrade'),
+                              color: AppColors.grey500,
+                              fontSize: 12,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, color: AppColors.appColors, size: 16.sp),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 30.h),
 
               // Personal Information Section
               _buildSectionTitle(AppTranslations.resolve('profile.personal_information')),

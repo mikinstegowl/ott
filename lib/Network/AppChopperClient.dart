@@ -60,13 +60,7 @@ class AppChopperClient {
       // Local development: the iOS simulator shares the Mac's network, so
       // localhost works; an Android emulator reaches the Mac at 10.0.2.2.
       // Swap back to the production URL before building a release.
-      baseUrl: Uri.parse(
-        const bool.fromEnvironment('dart.vm.product')
-            ? 'https://trebolplus.com/api/v1/'
-            : (Platform.isAndroid
-                ? 'http://10.0.2.2:8000/api/v1/'
-                : 'http://localhost:8000/api/v1/'),
-      ),
+      baseUrl: Uri.parse('https://trebolplus.com/api/v1/'),
       services: [AuthChopperService.create(), HomeChopperService.create()],
       interceptors: [
         RequestLogger(),
