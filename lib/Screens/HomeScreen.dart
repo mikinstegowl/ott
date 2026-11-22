@@ -38,30 +38,70 @@ class HomeScreen extends GetView<HomeController> {
                 padding: EdgeInsets.symmetric(vertical: 10.h),
                 child: Image.asset('assets/image/logo.png', height: 100.h),
               ),
-              Obx(() {
+              Builder(builder: (_) {
                 final isGuest = controller.isGuest;
-                final data =
-                    controller.profileData.value?.data ??
-                    controller.planName.value?.data;
-                final name = isGuest ? "Guest" : (data?.name ?? "User");
-                final subtitle = isGuest ? "Tap to login" : (data?.email ?? "");
-                final initial = isGuest ? "G" : (name.isNotEmpty ? name.trim().substring(0, 1).toUpperCase() : "U");
-                return GestureDetector(
-                  onTap: isGuest ? () {
-                    Get.back();
-                    Get.offAllNamed(RoutesName.logInScreen);
-                  } : null,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                    ).copyWith(bottom: 10.h),
+                if (isGuest) {
+                  return GestureDetector(
+                    onTap: () {
+                      Get.back();
+                      Get.offAllNamed(RoutesName.logInScreen);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w).copyWith(bottom: 10.h),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 25.r,
+                            backgroundColor: AppColors.appColors.withAlpha(51),
+                            child: AppTextWidget(
+                              text: "G",
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.appColors,
+                            ),
+                          ),
+                          SizedBox(width: 15.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AppTextWidget(
+                                  text: "Guest",
+                                  color: AppColors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                SizedBox(height: 2.h),
+                                AppTextWidget(
+                                  text: "Tap to login",
+                                  color: AppColors.appColors,
+                                  fontSize: 12,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(Icons.login_rounded, color: AppColors.appColors, size: 20.sp),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return Obx(() {
+                  final data =
+                      controller.profileData.value?.data ??
+                      controller.planName.value?.data;
+                  final name = data?.name ?? "User";
+                  final email = data?.email ?? "";
+                  final initial = name.isNotEmpty ? name.trim().substring(0, 1).toUpperCase() : "U";
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w).copyWith(bottom: 10.h),
                     child: Row(
                       children: [
                         CircleAvatar(
                           radius: 25.r,
                           backgroundColor: AppColors.appColors.withAlpha(51),
                           foregroundImage:
-                              (!isGuest && data?.avatar != null && data!.avatar!.isNotEmpty)
+                              (data?.avatar != null && data!.avatar!.isNotEmpty)
                                   ? NetworkImage(data.avatar!)
                                   : null,
                           child: AppTextWidget(
@@ -84,19 +124,17 @@ class HomeScreen extends GetView<HomeController> {
                               ),
                               SizedBox(height: 2.h),
                               AppTextWidget(
-                                text: subtitle,
-                                color: isGuest ? AppColors.appColors : AppColors.grey500,
+                                text: email,
+                                color: AppColors.grey500,
                                 fontSize: 12,
                               ),
                             ],
                           ),
                         ),
-                        if (isGuest)
-                          Icon(Icons.login_rounded, color: AppColors.appColors, size: 20.sp),
                       ],
                     ),
-                  ),
-                );
+                  );
+                });
               }),
               SizedBox(height: 10.h),
               Divider(color: AppColors.white10),
@@ -139,108 +177,100 @@ class HomeScreen extends GetView<HomeController> {
                 ),
               ),
               Divider(color: AppColors.white10),
-              Obx(() {
-                final isGuest = controller.isGuest;
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!isGuest)
-                      ListTile(
-                        leading: Icon(
-                          Icons.favorite_rounded,
-                          color: AppColors.white54,
-                          size: 20.sp,
-                        ),
-                        title: AppTextWidget(
-                          text: AppTranslations.resolve('watchlist.title'),
-                          color: AppColors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                        onTap: () {
-                          Get.back();
-                          Get.toNamed(RoutesName.watchlistScreen);
-                        },
-                      ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.help_outline_rounded,
-                        color: AppColors.white54,
-                        size: 20.sp,
-                      ),
-                      title: AppTextWidget(
-                        text: AppTranslations.resolve('home.faq'),
-                        color: AppColors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      onTap: () async {
-                        Get.back();
-                        final Uri url = Uri.parse('https://trebolplus.com/faq');
-                        if (!await launchUrl(url)) {
-                          debugPrint('Could not launch $url');
-                        }
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.support_agent_rounded,
-                        color: AppColors.white54,
-                        size: 20.sp,
-                      ),
-                      title: AppTextWidget(
-                        text: AppTranslations.resolve('home.support'),
-                        color: AppColors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      onTap: () {
-                        Get.back();
-                        controller.supportAction();
-                      },
-                    ),
-                    if (isGuest)
-                      ListTile(
-                        leading: Icon(Icons.login_rounded, color: AppColors.appColors, size: 20.sp),
-                        title: AppTextWidget(
-                          text: "Login",
-                          color: AppColors.appColors,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        onTap: () {
-                          Get.back();
-                          Get.offAllNamed(RoutesName.logInScreen);
-                        },
-                      ),
-                    if (!isGuest)
-                      ListTile(
-                        leading: const Icon(Icons.logout, color: AppColors.red),
-                        title: AppTextWidget(
-                          text: AppTranslations.resolve('profile.log_out'),
-                          color: AppColors.red,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        onTap: () => controller.logOut(),
-                      ),
-                    if (!isGuest)
-                      ListTile(
-                        leading: const Icon(
-                          Icons.delete_outline_rounded,
-                          color: AppColors.red,
-                        ),
-                        title: AppTextWidget(
-                          text: AppTranslations.resolve('profile.delete_account'),
-                          color: AppColors.red,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        onTap: () => controller.deleteAccount(),
-                      ),
-                  ],
-                );
-              }),
+              if (!controller.isGuest)
+                ListTile(
+                  leading: Icon(
+                    Icons.favorite_rounded,
+                    color: AppColors.white54,
+                    size: 20.sp,
+                  ),
+                  title: AppTextWidget(
+                    text: AppTranslations.resolve('watchlist.title'),
+                    color: AppColors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  onTap: () {
+                    Get.back();
+                    Get.toNamed(RoutesName.watchlistScreen);
+                  },
+                ),
+              ListTile(
+                leading: Icon(
+                  Icons.help_outline_rounded,
+                  color: AppColors.white54,
+                  size: 20.sp,
+                ),
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('home.faq'),
+                  color: AppColors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                ),
+                onTap: () async {
+                  Get.back();
+                  final Uri url = Uri.parse('https://trebolplus.com/faq');
+                  if (!await launchUrl(url)) {
+                    debugPrint('Could not launch $url');
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.support_agent_rounded,
+                  color: AppColors.white54,
+                  size: 20.sp,
+                ),
+                title: AppTextWidget(
+                  text: AppTranslations.resolve('home.support'),
+                  color: AppColors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                ),
+                onTap: () {
+                  Get.back();
+                  controller.supportAction();
+                },
+              ),
+              if (controller.isGuest)
+                ListTile(
+                  leading: Icon(Icons.login_rounded, color: AppColors.appColors, size: 20.sp),
+                  title: AppTextWidget(
+                    text: "Login",
+                    color: AppColors.appColors,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  onTap: () {
+                    Get.back();
+                    Get.offAllNamed(RoutesName.logInScreen);
+                  },
+                ),
+              if (!controller.isGuest)
+                ListTile(
+                  leading: const Icon(Icons.logout, color: AppColors.red),
+                  title: AppTextWidget(
+                    text: AppTranslations.resolve('profile.log_out'),
+                    color: AppColors.red,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  onTap: () => controller.logOut(),
+                ),
+              if (!controller.isGuest)
+                ListTile(
+                  leading: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: AppColors.red,
+                  ),
+                  title: AppTextWidget(
+                    text: AppTranslations.resolve('profile.delete_account'),
+                    color: AppColors.red,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  onTap: () => controller.deleteAccount(),
+                ),
               SizedBox(height: 10.h),
             ],
           ),
